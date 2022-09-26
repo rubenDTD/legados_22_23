@@ -264,6 +264,7 @@
            IF FSM <> 00
                GO TO PSYS-ERR.
 
+
            MOVE 0 TO LAST-USER-MOV-NUM.
            MOVE 0 TO LAST-MOV-NUM.
 
@@ -310,15 +311,13 @@
            MOVE 9 TO LINEA-ESP-ACTUAL.
 
            OPEN I-O F-ESPECTACULOS.
-           IF FSE <> 30
+           IF FSE <> 00
                GO TO PSYS-ERR.
-
 
        LEER-PRIMEROS.
            READ F-ESPECTACULOS NEXT RECORD AT END GO WAIT-ORDER.
                MOVE 1 TO ESP-VALIDO.
 
-               PERFORM FILTRADO THRU FILTRADO.
 
                IF ESP-VALIDO = 1
                    ADD 1 TO LINEA-ESP-ACTUAL

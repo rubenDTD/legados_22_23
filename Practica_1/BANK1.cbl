@@ -87,7 +87,6 @@
                PIC 9(4) USING PIN-INTRODUCIDO.
 
 
-
        PROCEDURE DIVISION.
        IMPRIMIR-CABECERA.
 
