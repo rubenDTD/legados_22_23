@@ -91,6 +91,12 @@
        77 EURDEC-USUARIO           PIC   9(2).
        77 CUENTA-DESTINO           PIC  9(16).
        77 NOMBRE-DESTINO           PIC  X(35).
+       *> NUEVO
+       77 DIA-USUARIO           PIC   9(2).
+       77 MES-USUARIO           PIC   9(2).
+       77 ANO-USUARIO           PIC   9(4).
+       77 DIA-MENSUAL-USUARIO   PIC   9(2).
+       77 BUCLE-MES             PIC   99 VALUE 0.
 
        77 CENT-SALDO-ORD-USER      PIC  S9(9).
        77 CENT-SALDO-DST-USER      PIC  S9(9).
@@ -114,8 +120,17 @@
            05 FILLER BLANK ZERO AUTO UNDERLINE
       *>          SIGN IS LEADING SEPARATE
                LINE 16 COL 54 PIC 9(7) USING EURENT-USUARIO.
-           05 FILLER BLANK ZERO UNDERLINE
+           05 FILLER AUTO UNDERLINE
                LINE 16 COL 63 PIC 9(2) USING EURDEC-USUARIO.
+           *> NUEVO
+           05 FILLER BLANK ZERO AUTO UNDERLINE
+               LINE 19 COL 58 PIC 9(2) USING DIA-USUARIO.
+           05 FILLER BLANK ZERO AUTO UNDERLINE
+               LINE 19 COL 61 PIC 9(2) USING MES-USUARIO.
+           05 FILLER BLANK ZERO AUTO  UNDERLINE
+               LINE 19 COL 64 PIC 9(4) USING ANO-USUARIO.
+           05 FILLER BLANK ZERO UNDERLINE
+               LINE 20 COL 70 PIC 9(2) USING DIA-MENSUAL-USUARIO.
 
        01 SALDO-DISPLAY.
            05 FILLER SIGN IS LEADING SEPARATE
@@ -133,6 +148,11 @@
            INITIALIZE NOMBRE-DESTINO.
            INITIALIZE EURENT-USUARIO.
            INITIALIZE EURDEC-USUARIO.
+           *>NUEVO
+           INITIALIZE DIA-USUARIO.
+           INITIALIZE MES-USUARIO.
+           INITIALIZE ANO-USUARIO.
+           INITIALIZE DIA-MENSUAL-USUARIO.
            INITIALIZE LAST-MOV-NUM.
            INITIALIZE LAST-USER-ORD-MOV-NUM.
            INITIALIZE LAST-USER-DST-MOV-NUM.
@@ -152,12 +172,12 @@
            DISPLAY HORAS LINE 4 COL 44.
            DISPLAY ":" LINE 4 COL 46.
            DISPLAY MINUTOS LINE 4 COL 47.
-
+       *>NUEVO
        MOVIMIENTOS-OPEN.
            OPEN I-O F-MOVIMIENTOS.
-           IF FSM <> 00 THEN
-               GO TO PSYS-ERR
-           END-IF.
+           *>IF FSM <> 00 THEN
+             *>  GO TO ERROROOROR
+           *>END-IF.
 
        LECTURA-MOVIMIENTOS.
            READ F-MOVIMIENTOS NEXT RECORD AT END GO TO ORDENACION-TRF.
@@ -197,6 +217,13 @@
            DISPLAY "Indique la cantidad a transferir" LINE 16 COL 19.
            DISPLAY "," LINE 16 COL 61.
            DISPLAY "EUR" LINE 16 COL 66.
+           *> NUEVO
+           DISPLAY "Indique una opcion (la otra rellenela con 0's):"
+               LINE 18 COL 19.
+           DISPLAY "Fecha que se producira la transaccion    /  /"
+               LINE 19 COL 19.
+           DISPLAY "Dia en que se producira la transacion mensualmente"
+               LINE 20 COL 19.
 
            COMPUTE CENT-SALDO-ORD-USER = (MOV-SALDOPOS-ENT * 100)
                                          + MOV-SALDOPOS-DEC.
@@ -230,6 +257,13 @@
            DISPLAY "Indique la cantidad a transferir" LINE 16 COL 19.
            DISPLAY "," LINE 16 COL 61.
            DISPLAY "EUR" LINE 16 COL 66.
+           *> NUEVO
+           DISPLAY "Indique una opcion (la otra rellenela con 0's):"
+               LINE 18 COL 19.
+           DISPLAY "Fecha que se producira la transaccion    /  /"
+               LINE 19 COL 19.
+           DISPLAY "Dia en que se producira la transacion mensualmente"
+               LINE 20 COL 19.
 
            ACCEPT FILTRO-CUENTA ON EXCEPTION
            IF ESC-PRESSED THEN
@@ -261,6 +295,17 @@
                EXIT PROGRAM
            ELSE
                GO TO ENTER-VERIFICACION
+           END-IF.
+
+       *> NUEVO
+       CHECK-MENSUALIDAD.
+           IF DIA-MENSUAL-USUARIO <> 00 THEN
+                COMPUTE BUCLE-MES = BUCLE-MES + 1
+                IF BUCLE-MES > 12 THEN
+                    CLOSE F-MOVIMIENTOS
+                    GO TO P-EXITO
+           ELSE
+               GO TO VERIFICACION-CTA-CORRECTA
            END-IF.
 
        VERIFICACION-CTA-CORRECTA.
@@ -299,11 +344,18 @@
 
            ADD 1 TO LAST-MOV-NUM.
 
+           *> NUEVO
            MOVE LAST-MOV-NUM   TO MOV-NUM.
            MOVE TNUM           TO MOV-TARJETA.
-           MOVE ANO            TO MOV-ANO.
-           MOVE MES            TO MOV-MES.
-           MOVE DIA            TO MOV-DIA.
+           IF DIA-MENSUAL-USUARIO = 00 THEN
+               MOVE ANO-USUARIO    TO MOV-ANO
+               MOVE MES-USUARIO    TO MOV-MES
+               MOVE DIA-USUARIO    TO MOV-DIA
+           ELSE
+               MOVE ANO                 TO MOV-ANO
+               MOVE BUCLE-MES           TO MOV-MES
+               MOVE DIA-MENSUAL-USUARIO TO MOV-DIA
+           END-IF.
            MOVE HORAS          TO MOV-HOR.
            MOVE MINUTOS        TO MOV-MIN.
            MOVE SEGUNDOS       TO MOV-SEG.
@@ -325,11 +377,18 @@
 
            ADD 1 TO LAST-MOV-NUM.
 
+           *> NUEVO
            MOVE LAST-MOV-NUM   TO MOV-NUM.
            MOVE CUENTA-DESTINO TO MOV-TARJETA.
-           MOVE ANO            TO MOV-ANO.
-           MOVE MES            TO MOV-MES.
-           MOVE DIA            TO MOV-DIA.
+           IF DIA-MENSUAL-USUARIO = 00 THEN
+               MOVE ANO-USUARIO    TO MOV-ANO
+               MOVE MES-USUARIO    TO MOV-MES
+               MOVE DIA-USUARIO    TO MOV-DIA
+           ELSE
+               MOVE ANO                 TO MOV-ANO
+               MOVE BUCLE-MES           TO MOV-MES
+               MOVE DIA-MENSUAL-USUARIO TO MOV-DIA
+           END-IF.
            MOVE HORAS          TO MOV-HOR.
            MOVE MINUTOS        TO MOV-MIN.
            MOVE SEGUNDOS       TO MOV-SEG.
@@ -345,6 +404,14 @@
                TO MOV-SALDOPOS-DEC.
 
            WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR.
+
+           *> NUEVO
+           IF DIA-MENSUAL-USUARIO <> 00 THEN
+                GO TO CHECK-MENSUALIDAD
+           ELSE
+                CLOSE F-MOVIMIENTOS
+                GO TO P-EXITO
+           END-IF.
 
            CLOSE F-MOVIMIENTOS.
 
@@ -364,6 +431,19 @@
 
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
            DISPLAY "Ha ocurrido un error interno" LINE 9 COL 25
+               WITH FOREGROUND-COLOR IS BLACK
+                    BACKGROUND-COLOR IS RED.
+           DISPLAY "Vuelva mas tarde" LINE 11 COL 32
+               WITH FOREGROUND-COLOR IS BLACK
+                    BACKGROUND-COLOR IS RED.
+           DISPLAY "Enter - Aceptar" LINE 24 COL 33.
+
+       ERROROOROR.
+           CLOSE TARJETAS.
+           CLOSE F-MOVIMIENTOS.
+
+           PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
+           DISPLAY FSM LINE 9 COL 25
                WITH FOREGROUND-COLOR IS BLACK
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Vuelva mas tarde" LINE 11 COL 32

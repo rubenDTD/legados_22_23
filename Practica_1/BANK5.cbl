@@ -71,8 +71,12 @@
        77 LAST-USER-MOV-NUM        PIC   9(35).
        77 LAST-MOV-NUM             PIC   9(35).
 
+       *> NUEVO
        77 EURENT-USUARIO           PIC    9(7).
        77 EURDEC-USUARIO           PIC    9(2).
+       77 BILL10-USUARIO           PIC    9(2).
+       77 BILL20-USUARIO           PIC    9(2).
+       77 BILL50-USUARIO           PIC    9(2).
        77 SALDO-USUARIO-ENT        PIC   S9(9).
        77 SALDO-USUARIO-DEC        PIC    9(2).
        77 CENT-SALDO-USER          PIC  S9(11).
@@ -91,12 +95,14 @@
        01 BLANK-SCREEN.
            05 FILLER LINE 1 BLANK SCREEN BACKGROUND-COLOR BLACK.
 
-
+       *> NUEVO
        01 ENTRADA-USUARIO.
            05 FILLER BLANK ZERO AUTO UNDERLINE
-               LINE 13 COL 41 PIC 9(7) USING EURENT-USUARIO.
+               LINE 13 COL 40 PIC 9(2) USING BILL10-USUARIO.
+           05 FILLER BLANK ZERO AUTO UNDERLINE
+               LINE 14 COL 40 PIC 9(2) USING BILL20-USUARIO.
            05 FILLER BLANK ZERO UNDERLINE
-               LINE 13 COL 49 PIC 9(2) USING EURDEC-USUARIO.
+               LINE 15 COL 40 PIC 9(2) USING BILL50-USUARIO.
 
        01 SALDO-DISPLAY.
            05 FILLER SIGN IS LEADING SEPARATE
@@ -136,9 +142,6 @@
            DISPLAY ":" LINE 4 COL 46.
            DISPLAY MINUTOS LINE 4 COL 47.
 
-
-
-
        CONSULTA-ULTIMO-MOVIMIENTO SECTION.
 
            INITIALIZE CENT-ACUMULADOR.
@@ -159,9 +162,6 @@
 
        LAST-MOV-FOUND.
            CLOSE F-MOVIMIENTOS.
-
-
-
 
        CONSULTA-SALDO-USUARIO SECTION.
            OPEN INPUT F-MOVIMIENTOS.
@@ -210,8 +210,10 @@
 
 
        PANTALLA-INGRESO SECTION.
-           INITIALIZE EURENT-USUARIO.
-           INITIALIZE EURDEC-USUARIO.
+           *>NUEVO
+           INITIALIZE BILL10-USUARIO.
+           INITIALIZE BILL20-USUARIO.
+           INITIALIZE BILL50-USUARIO.
 
            DISPLAY "ESC - Finalizar ingreso efectivo" LINE 24 COL 33.
            DISPLAY "Ingresar efectivo" LINE 8 COL 30.
@@ -220,9 +222,10 @@
            DISPLAY SALDO-DISPLAY.
 
            DISPLAY "Por favor,introduzca billetes" LINE 11 COL 19.
-           DISPLAY "Cantidad introducida:         " LINE 13 COL 19.
-           DISPLAY "." LINE 13 COL 48.
-           DISPLAY "EUR" LINE 13 COL 52.
+           *> NUEVO
+           DISPLAY "Billletes de 10 EUR: " LINE 13 COL 19.
+           DISPLAY "Billletes de 20 EUR: " LINE 14 COL 19.
+           DISPLAY "Billletes de 50 EUR: " LINE 15 COL 19.
 
        CONF2.
            ACCEPT ENTRADA-USUARIO ON EXCEPTION
@@ -232,6 +235,11 @@
                    GO TO CONF2
                END-IF.
 
+           *> NUEVO
+           COMPUTE EURENT-USUARIO = (BILL10-USUARIO*10 +
+                                     BILL20-USUARIO*20 +
+                                     BILL50-USUARIO*50).
+           MOVE 00 TO EURDEC-USUARIO.
            COMPUTE CENT-IMPOR-USER = (EURENT-USUARIO * 100)
                                      + EURDEC-USUARIO.
            ADD CENT-IMPOR-USER TO CENT-ACUMULADOR.
@@ -246,6 +254,7 @@
 
            ADD CENT-IMPOR-USER TO CENT-SALDO-USER
                ON SIZE ERROR GO TO PSYS-ERR.
+           *> NUEVO
            COMPUTE SALDO-USUARIO-ENT = (CENT-SALDO-USER / 100).
            MOVE FUNCTION MOD(CENT-SALDO-USER, 100)
                TO SALDO-USUARIO-DEC.
@@ -263,6 +272,7 @@
            MOVE MINUTOS                 TO MOV-MIN.
            MOVE SEGUNDOS                TO MOV-SEG.
 
+           *> NUEVO
            MOVE EURENT-USUARIO          TO MOV-IMPORTE-ENT.
            MOVE EURDEC-USUARIO          TO MOV-IMPORTE-DEC.
 
@@ -274,13 +284,12 @@
            WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR.
            CLOSE F-MOVIMIENTOS.
 
-           GO TO PANTALLA-INGRESO.
-
-
-
+       *> NUEVO
+           GO TO PANT.
 
        PANT SECTION.
 
+           *> NUEVO
            COMPUTE EURENT-USUARIO = (CENT-ACUMULADOR / 100).
            MOVE FUNCTION MOD(CENT-ACUMULADOR, 100)
                TO EURDEC-USUARIO.
@@ -288,6 +297,7 @@
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
            DISPLAY "Ingresar efectivo" LINE 8 COL 30.
            DISPLAY "Se han recibido correctamente:" LINE 10 COL 19.
+           *> NUEVO
            DISPLAY EURENT-USUARIO LINE 10 COL 50.
            DISPLAY EURDEC-USUARIO LINE 10 COL 58.
            DISPLAY "." LINE 10 COL 57.
