@@ -206,7 +206,7 @@
            INITIALIZE EURENT-USUARIO.
            INITIALIZE EURDEC-USUARIO.
 
-           DISPLAY "Enter - Aceptar" LINE 24 COL 1.
+           DISPLAY "Enter - Aceptar" LINE 24 COL 3.
            DISPLAY "ESC - Cancelar" LINE 24 COL 66.
 
            DISPLAY "Retirar efectivo" LINE 8 COL 30.
@@ -303,7 +303,7 @@
            DISPLAY "Enter - Aceptar" LINE 24 COL 33.
 
        EXIT-ENTER.
-           ACCEPT PRESSED-KEY LINE 24 COL 80
+           ACCEPT OMITTED
            IF ENTER-PRESSED
                EXIT PROGRAM
            ELSE

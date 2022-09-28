@@ -89,6 +89,7 @@
 
 
        PROCEDURE DIVISION.
+
        IMPRIMIR-CABECERA.
 
            SET ENVIRONMENT 'COB_SCREEN_EXCEPTIONS' TO 'Y'
@@ -119,7 +120,7 @@
            DISPLAY "Enter - Aceptar" LINE 24 COL 33.
 
        P1-ENTER.
-           ACCEPT CHOICE LINE 4 COL 47 ON EXCEPTION
+           ACCEPT OMITTED ON EXCEPTION
            IF ENTER-PRESSED
                GO TO P2
            ELSE
@@ -173,10 +174,11 @@
            DISPLAY "6 - Listado de transferencias" LINE 13 COL 15.
            DISPLAY "7 - Comprar entradas de espectaculos" LINE 15 COL 15.
            DISPLAY "8 - Cambiar clave" LINE 17 COL 15.
+           DISPLAY "Elija una opcion y pulse Enter:" LINE 20 COL 20.
            DISPLAY "ESC - Salir" LINE 24 COL 34.
 
        PMENUA1.
-           ACCEPT CHOICE LINE 24 COL 80 ON EXCEPTION
+           ACCEPT CHOICE LINE 20 COL 52 ON EXCEPTION
                IF ESC-PRESSED
                    GO TO IMPRIMIR-CABECERA
                ELSE

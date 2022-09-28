@@ -246,7 +246,7 @@
            DISPLAY "Entre las fechas   /  /     y   /  /    "
                LINE 13 COL 20.
 
-           DISPLAY "Enter - Aceptar" LINE 24 COL 1.
+           DISPLAY "Enter - Aceptar" LINE 24 COL 3.
            DISPLAY "ESC - Cancelar" LINE 24 COL 65.
 
            ACCEPT FILTRO-MOVIMIENTOS ON EXCEPTION
@@ -310,7 +310,7 @@
 
        WAIT-ORDER.
 
-           ACCEPT PRESSED-KEY LINE 24 COL 80 ON EXCEPTION
+           ACCEPT OMITTED ON EXCEPTION
 
               IF ESC-PRESSED THEN
                   CLOSE F-MOVIMIENTOS
@@ -445,7 +445,7 @@
            DISPLAY "Enter - Aceptar" LINE 24 COL 33.
 
        EXIT-ENTER.
-           ACCEPT PRESSED-KEY LINE 24 COL 80
+           ACCEPT OMITTED
            IF ENTER-PRESSED
                EXIT PROGRAM
            ELSE

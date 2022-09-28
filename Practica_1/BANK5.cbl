@@ -215,13 +215,13 @@
            INITIALIZE BILL20-USUARIO.
            INITIALIZE BILL50-USUARIO.
 
-           DISPLAY "ESC - Finalizar ingreso efectivo" LINE 24 COL 33.
+           DISPLAY "ESC - Finalizar ingreso efectivo" LINE 24 COL 24.
            DISPLAY "Ingresar efectivo" LINE 8 COL 30.
            DISPLAY "Saldo Actual: " LINE 10 COL 19.
 
            DISPLAY SALDO-DISPLAY.
 
-           DISPLAY "Por favor,introduzca billetes" LINE 11 COL 19.
+           DISPLAY "Por favor, introduzca los billetes:" LINE 11 COL 19.
            *> NUEVO
            DISPLAY "Billletes de 10 EUR: " LINE 13 COL 19.
            DISPLAY "Billletes de 20 EUR: " LINE 14 COL 19.
@@ -326,7 +326,7 @@
            DISPLAY "Enter - Aceptar" LINE 24 COL 33.
 
        EXIT-ENTER.
-           ACCEPT PRESSED-KEY LINE 24 COL 80.
+           ACCEPT OMITTED
            IF ENTER-PRESSED
                EXIT PROGRAM
            ELSE

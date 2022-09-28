@@ -263,7 +263,7 @@
            DISPLAY "Cantidad entre          .   EUR y         .   EUR"
                LINE 15 COL 15.
 
-           DISPLAY "Enter - Aceptar" LINE 24 COL 1.
+           DISPLAY "Enter - Aceptar" LINE 24 COL 3.
            DISPLAY "ESC - Cancelar" LINE 24 COL 65.
 
            ACCEPT FILTRO-MOVIMIENTOS ON EXCEPTION

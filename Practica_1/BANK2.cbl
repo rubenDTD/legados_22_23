@@ -68,7 +68,7 @@
            88 DOWN-ARROW-PRESSED  VALUE  2004.
 
        77 LAST-MOV-NUM             PIC  9(35).
-       77 PRESSED-KEY              PIC   9(4).
+       77 PRESSED-KEY              PIC   9(1).
 
        LINKAGE SECTION.
        77 TNUM                     PIC  9(16).
@@ -98,7 +98,7 @@
            MOVE FUNCTION CURRENT-DATE TO CAMPOS-FECHA.
 
            DISPLAY DIA LINE 4 COL 32.
-           DISPLAY "-" LINE 4 COL 32.
+           DISPLAY "-" LINE 4 COL 34.
            DISPLAY MES LINE 4 COL 35.
            DISPLAY "-" LINE 4 COL 37.
            DISPLAY ANO LINE 4 COL 38.
@@ -167,7 +167,7 @@
            DISPLAY "Enter - Aceptar" LINE 24 COL 33.
 
        EXIT-ENTER.
-           ACCEPT PRESSED-KEY LINE 24 COL 80.
+           ACCEPT OMITTED
            IF ENTER-PRESSED
                EXIT PROGRAM
            ELSE
