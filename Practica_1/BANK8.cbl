@@ -121,16 +121,6 @@
                LINE 13 COL 53 PIC 9(2) USING MES2-USUARIO.
            05 FILLER BLANK ZERO AUTO UNDERLINE
                LINE 13 COL 56 PIC 9(4) USING ANO2-USUARIO.
-           05 FILLER BLANK ZERO AUTO UNDERLINE
-               SIGN IS LEADING SEPARATE
-               LINE 15 COL 30 PIC -9(7) USING EURENT1-USUARIO.
-           05 FILLER BLANK ZERO AUTO UNDERLINE
-               LINE 15 COL 40 PIC 9(2) USING EURDEC1-USUARIO.
-           05 FILLER BLANK ZERO AUTO UNDERLINE
-               SIGN IS LEADING SEPARATE
-               LINE 15 COL 48 PIC -9(7) USING EURENT2-USUARIO.
-           05 FILLER BLANK ZERO UNDERLINE
-               LINE 15 COL 58 PIC 9(2) USING EURDEC2-USUARIO.
 
        01 FILA-MOVIMIENTO-PAR.
 
@@ -236,7 +226,7 @@
            DISPLAY ANO LINE 4 COL 38.
            DISPLAY HORAS LINE 4 COL 44.
            DISPLAY ":" LINE 4 COL 46.
-           DISPLAY MINUTOS LINE 4 COL 46.
+           DISPLAY MINUTOS LINE 4 COL 47.
 
        PCONSULTA-MOV.
 
@@ -247,21 +237,14 @@
            INITIALIZE MES2-USUARIO.
            INITIALIZE ANO2-USUARIO.
 
-           INITIALIZE EURENT1-USUARIO.
-           INITIALIZE EURDEC1-USUARIO.
-           INITIALIZE EURENT2-USUARIO.
-           INITIALIZE EURDEC2-USUARIO.
+           DISPLAY "Se  mostraran las transferencias" LINE 8 COL 8.
+           DISPLAY "ejecutadas y pendientes del usuario." LINE 8 COL 41.
 
-           DISPLAY "Se  mostraran los ultimos movimientos," LINE 8 COL 8.
-           DISPLAY "de mas a menos recientes." LINE 8 COL 47.
-
-           DISPLAY "Alternativamente, indique un intervalo"LINE 10 COL 8.
-           DISPLAY "de fechas y/o cantidades." LINE 10 COL 47.
+           DISPLAY "Por favor, indique un intervalo de fechas:"
+               LINE 10 COL 8.
 
            DISPLAY "Entre las fechas   /  /     y   /  /    "
                LINE 13 COL 20.
-           DISPLAY "Cantidad entre          .   EUR y         .   EUR"
-               LINE 15 COL 15.
 
            DISPLAY "Enter - Aceptar" LINE 24 COL 1.
            DISPLAY "ESC - Cancelar" LINE 24 COL 65.
@@ -278,15 +261,6 @@
                        MOVE 99   TO DIA2-USUARIO
                        MOVE 99   TO MES2-USUARIO
                        MOVE 9999 TO ANO2-USUARIO.
-
-           IF EURENT2-USUARIO = 0
-               IF EURDEC2-USUARIO = 0
-                   IF EURENT1-USUARIO = 0
-                       IF EURDEC1-USUARIO = 0
-                           MOVE 9999999  TO EURENT2-USUARIO
-                           MOVE 99       TO EURDEC2-USUARIO
-                           MOVE -9999999  TO EURENT1-USUARIO
-                           MOVE 99        TO EURDEC1-USUARIO.
 
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
 
@@ -500,20 +474,8 @@
            IF FECHA-MAX < FECHA-MOV
                MOVE 0 TO MOV-VALIDO.
 
-           COMPUTE CENT-MIN = (EURENT1-USUARIO * 100)
-                              + (EURDEC1-USUARIO).
-
-           COMPUTE CENT-MOV = (MOV-IMPORTE-ENT * 100)
-                              + (MOV-IMPORTE-DEC).
-
-           COMPUTE CENT-MAX = (EURENT2-USUARIO * 100)
-                              + (EURDEC2-USUARIO).
-
-           IF CENT-MIN > CENT-MOV
+           IF MOV-CONCEPTO <> "Transferimos"
                MOVE 0 TO MOV-VALIDO.
-           IF CENT-MAX < CENT-MOV
-               MOVE 0 TO MOV-VALIDO.
-
 
        MOSTRAR-MOVIMIENTO.
 

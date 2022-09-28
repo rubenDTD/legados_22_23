@@ -102,7 +102,7 @@
            MOVE FUNCTION CURRENT-DATE TO CAMPOS-FECHA.
 
            DISPLAY DIA LINE 4 COL 32.
-           DISPLAY "-" LINE 4 COL 32.
+           DISPLAY "-" LINE 4 COL 34.
            DISPLAY MES LINE 4 COL 35.
            DISPLAY "-" LINE 4 COL 37.
            DISPLAY ANO LINE 4 COL 38.
@@ -113,7 +113,8 @@
 
        P1.
            DISPLAY "Bienvenido a UnizarBank" LINE 8 COL 28.
-           DISPLAY "Por favor, introduzca la tarjeta para operar" LINE 10 COL 18.
+           DISPLAY "Por favor, introduzca la tarjeta para operar"
+               LINE 10 COL 18.
 
            DISPLAY "Enter - Aceptar" LINE 24 COL 33.
 
