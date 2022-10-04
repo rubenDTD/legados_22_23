@@ -53,18 +53,26 @@
            02 MOV-SALDOPOS-ENT     PIC  S9(9).
            02 MOV-SALDOPOS-DEC     PIC   9(2).
 
+
        FD TRANSFERENCIAS
            LABEL RECORD STANDARD
            VALUE OF FILE-ID IS "transf.txt".
        01 TRANSF-REG.
            02 TRANSF-NUM           PIC   9(35).
-           02 TRANSF-TARJETA       PIC   9(16).
+           02 TARJETA-ORIGEN       PIC   9(16).
+           02 TARJETA-DESTINO      PIC   9(16).
            02 TRANSF-IMPORTE-ENT   PIC   S9(7).
            02 TRANSF-IMPORTE-DEC   PIC    9(2).
            02 TRANSF-DIA           PIC    9(2).
+           02 DIA-ORDEN            PIC    9(2).
            02 TRANSF-MES           PIC    9(2).
            02 TRANSF-ANO           PIC    9(4).
-
+           02 ULTIMA-MENSUALIDAD   PIC    9(2).
+           02 ULTIMO-ANO           PIC    9(4).
+           02 SALDO-ORIGEN-ENT     PIC   S9(9).
+           02 SALDO-ORIGEN-DEC     PIC    9(2).
+           02 SALDO-DESTINO-ENT    PIC   S9(9).
+           02 SALDO-DESTINO-DEC    PIC    9(2).
 
        WORKING-STORAGE SECTION.
        77 FST                      PIC   X(2).
@@ -146,7 +154,7 @@
                LINE 19 COL 58 PIC 9(2) USING DIA-USUARIO.
            05 FILLER AUTO UNDERLINE
                LINE 19 COL 61 PIC 9(2) USING MES-USUARIO.
-           05 FILLER AUTO UNDERLINE
+           05 FILLER AUTO  UNDERLINE
                LINE 19 COL 64 PIC 9(4) USING ANO-USUARIO.
            05 FILLER UNDERLINE
                LINE 20 COL 70 PIC 9(2) USING DIA-MENSUAL-USUARIO.
@@ -195,7 +203,7 @@
        MOVIMIENTOS-OPEN.
            OPEN I-O F-MOVIMIENTOS.
            *>IF FSM <> 00 THEN
-             *>  GO TO ERROROOROR
+               *>GO TO ERROROOROR
            *>END-IF.
 
        LECTURA-MOVIMIENTOS.
@@ -316,17 +324,6 @@
                GO TO ENTER-VERIFICACION
            END-IF.
 
-       *> NUEVO
-       CHECK-MENSUALIDAD.
-           IF DIA-MENSUAL-USUARIO <> 00 THEN
-                COMPUTE BUCLE-MES = BUCLE-MES + 1
-                IF BUCLE-MES > 12 THEN
-                    CLOSE F-MOVIMIENTOS
-                    GO TO P-EXITO
-           ELSE
-               GO TO VERIFICACION-CTA-CORRECTA
-           END-IF.
-
        VERIFICACION-CTA-CORRECTA.
            OPEN I-O TARJETAS.
            IF FST <> 00
@@ -341,14 +338,24 @@
            MOVE 0 TO LAST-USER-DST-MOV-NUM.
 
        LECTURA-SALDO-DST.
-           READ F-MOVIMIENTOS NEXT RECORD AT END GO TO GUARDAR-TRF.
-           IF MOV-TARJETA = CUENTA-DESTINO THEN
-               IF LAST-USER-DST-MOV-NUM < MOV-NUM THEN
-                   MOVE MOV-NUM TO LAST-USER-DST-MOV-NUM
-               END-IF
-           END-IF.
+           READ F-MOVIMIENTOS NEXT RECORD AT END
+               GO TO CHECK-TRANSFERENCIA.
+                   IF MOV-TARJETA = CUENTA-DESTINO THEN
+                       IF LAST-USER-DST-MOV-NUM < MOV-NUM THEN
+                           MOVE MOV-NUM TO LAST-USER-DST-MOV-NUM
+                       END-IF
+                   END-IF.
 
-           GO TO LECTURA-SALDO-DST.
+                   GO TO LECTURA-SALDO-DST.
+
+
+       CHECK-TRANSFERENCIA.
+           IF ((DIA-USUARIO <> 0 AND MES-USUARIO <> 0 AND
+               DIA-USUARIO <> 0) OR (DIA-MENSUAL-USUARIO <> 00)) THEN
+                   GO TO REGISTRAR-TRANSF-PENDIENTE
+           ELSE
+                   GO TO GUARDAR-TRF
+           END-IF.
 
        GUARDAR-TRF.
            CLOSE F-MOVIMIENTOS.
@@ -366,15 +373,11 @@
            *> NUEVO
            MOVE LAST-MOV-NUM   TO MOV-NUM.
            MOVE TNUM           TO MOV-TARJETA.
-           IF DIA-MENSUAL-USUARIO = 00 THEN
-               MOVE ANO-USUARIO    TO MOV-ANO
-               MOVE MES-USUARIO    TO MOV-MES
-               MOVE DIA-USUARIO    TO MOV-DIA
-           ELSE
-               MOVE ANO                 TO MOV-ANO
-               MOVE BUCLE-MES           TO MOV-MES
-               MOVE DIA-MENSUAL-USUARIO TO MOV-DIA
-           END-IF.
+
+           MOVE ANO    TO MOV-ANO.
+           MOVE MES    TO MOV-MES.
+           MOVE DIA   TO MOV-DIA.
+
            MOVE HORAS          TO MOV-HOR.
            MOVE MINUTOS        TO MOV-MIN.
            MOVE SEGUNDOS       TO MOV-SEG.
@@ -399,15 +402,10 @@
            *> NUEVO
            MOVE LAST-MOV-NUM   TO MOV-NUM.
            MOVE CUENTA-DESTINO TO MOV-TARJETA.
-           IF DIA-MENSUAL-USUARIO = 00 THEN
-               MOVE ANO-USUARIO    TO MOV-ANO
-               MOVE MES-USUARIO    TO MOV-MES
-               MOVE DIA-USUARIO    TO MOV-DIA
-           ELSE
-               MOVE ANO                 TO MOV-ANO
-               MOVE BUCLE-MES           TO MOV-MES
-               MOVE DIA-MENSUAL-USUARIO TO MOV-DIA
-           END-IF.
+
+           MOVE ANO    TO MOV-ANO.
+           MOVE MES    TO MOV-MES.
+           MOVE DIA    TO MOV-DIA.
            MOVE HORAS          TO MOV-HOR.
            MOVE MINUTOS        TO MOV-MIN.
            MOVE SEGUNDOS       TO MOV-SEG.
@@ -424,20 +422,11 @@
 
            WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR.
 
-           *> NUEVO
-           IF DIA-MENSUAL-USUARIO <> 00 THEN
-                GO TO CHECK-MENSUALIDAD
-           ELSE
-                *>CLOSE F-MOVIMIENTOS
-                GO TO P-EXITO
-           END-IF.
+           CLOSE F-MOVIMIENTOS.
+           GO TO P-EXITO.
 
-           *>CLOSE F-MOVIMIENTOS.
-
-
-       P-EXITO.
-
-           OPEN OUTPUT TRANSFERENCIAS.
+       REGISTRAR-TRANSF-PENDIENTE.
+           OPEN I-O TRANSFERENCIAS.
            IF FSTM <> 00 THEN
                PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA
                DISPLAY FSTM LINE 9 COL 25
@@ -451,9 +440,19 @@
            END-IF.
 
            MOVE LAST-MOV-NUM   TO TRANSF-NUM.
-           MOVE CUENTA-DESTINO TO TRANSF-TARJETA.
+           MOVE TNUM           TO TARJETA-ORIGEN.
+           MOVE CUENTA-DESTINO TO TARJETA-DESTINO.
            MOVE EURENT-USUARIO TO TRANSF-IMPORTE-ENT.
            MOVE EURDEC-USUARIO TO TRANSF-IMPORTE-DEC.
+           MOVE 0              TO ULTIMA-MENSUALIDAD.
+           MOVE ANO            TO ULTIMO-ANO.
+           MOVE DIA            TO DIA-ORDEN.
+           COMPUTE SALDO-ORIGEN-ENT = (CENT-SALDO-ORD-USER / 100).
+           MOVE FUNCTION MOD(CENT-SALDO-ORD-USER, 100)
+               TO SALDO-ORIGEN-DEC.
+           COMPUTE SALDO-DESTINO-ENT = (CENT-SALDO-DST-USER / 100).
+           MOVE FUNCTION MOD(CENT-SALDO-DST-USER, 100)
+               TO SALDO-DESTINO-DEC.
            IF DIA-MENSUAL-USUARIO = 00 THEN
                MOVE ANO-USUARIO    TO TRANSF-ANO
                MOVE MES-USUARIO    TO TRANSF-MES
@@ -464,8 +463,6 @@
                MOVE DIA-MENSUAL-USUARIO TO TRANSF-DIA
            END-IF.
 
-           DISPLAY "Transf num" LINE 25 COL 33
-           DISPLAY TRANSF-NUM LINE 26 COL 33
 
            WRITE TRANSF-REG INVALID KEY GO TO PSYS-ERR.
            IF FSTM <> 00 THEN
@@ -480,11 +477,9 @@
                DISPLAY TRANSF-NUM LINE 25 COL 33
                GO TO EXIT-ENTER
            END-IF.
-           CLOSE F-MOVIMIENTOS.
            CLOSE TRANSFERENCIAS.
 
-
-
+       P-EXITO.
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
 
            DISPLAY "Ordenar transferencia" LINE 8 COL 30.
