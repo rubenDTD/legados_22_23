@@ -1,5 +1,6 @@
 package com.example.practica_2;
 
+import com.example.practica_2.comunication.WS3270;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -17,64 +18,34 @@ public class MainApplication extends Application {
         stage.show();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         //launch(); // ESTO EJECUTA LA INTERFAZ DE JAVAFX
+        String ip = "155.210.152.51";
+        String puerto = "3270";
+        // Ejeuctar programa
+        WS3270 comunicacion = new WS3270();
 
-        // Comunicacion ws3270exe
-        Process emulator;
-        String ws3270exe = "C:/Program Files/wc3270/wc3270.exe";
-        InputStream lectura = null;
-        PrintWriter teclado = null;
+        // Conectar: comando + enter
+        comunicacion.conectar(ip, puerto);
+        comunicacion.enter();
 
-        try {
-            emulator = Runtime.getRuntime().exec(ws3270exe);
-            lectura = emulator.getInputStream();
-            teclado = new PrintWriter(new OutputStreamWriter(emulator.getOutputStream()));
-        } catch (FileNotFoundException ef) {
-            System.err.println("Error, ejecutable WS3270.exe no encontrado");
-            System.exit(1);
-        } catch (IOException ex) {
-            System.err.println("Error, no se pudo conectar con WS3270.exe");
-            System.exit(1);
-        }
+        // Escribir usuario
+        comunicacion.escribirCadena("grupo_03");
+        comunicacion.enter();
 
-        // Connect IP:PORT
-        String cadenaConexion = "Connect(155.210.154.51:3270)";
+        // Escribir pass
+        comunicacion.escribirCadena("secreto6");
+        comunicacion.enter();
 
-        do {
-            cadenaConexion += "\n";
-            teclado.write(cadenaConexion);
-            teclado.flush();
-        } while (leerPantalla(lectura).toString().contains("OK"));
-
-        // Pulsar ENTER
-        String s = "ENTER";
-        do {
-            s += "\n";
-            teclado.write(s);
-            teclado.flush();
-        } while (leerPantalla(lectura).toString().contains("OK"));
-
+        // Acceder a aplicacion
+        comunicacion.enter();
+        comunicacion.ascii();
+        comunicacion.enter();
 
 
 
 
 
         System.out.println("Fin ejecucion");
-    }
-
-    public static StringBuilder leerPantalla(InputStream lectura) {
-        StringBuilder cadena = new StringBuilder();
-        try {
-            while (lectura.available() == 0); //Espera a que se llene el buffer
-            while (lectura.available() > 0) {
-                cadena.append((char) lectura.read());
-            }
-        } catch (IOException ex) {
-            cadena = null;
-        } finally {
-            System.out.println(cadena);
-            return cadena;
-        }
     }
 }
