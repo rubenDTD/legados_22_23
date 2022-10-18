@@ -49,6 +49,7 @@
            02 INUM      PIC 9(16).
            02 IINTENTOS PIC 9(1).
 
+
        FD TRANSFERENCIAS
            LABEL RECORD STANDARD
            VALUE OF FILE-ID IS "transf.txt".
@@ -59,14 +60,11 @@
            02 TRANSF-IMPORTE-ENT   PIC   S9(7).
            02 TRANSF-IMPORTE-DEC   PIC    9(2).
            02 TRANSF-DIA           PIC    9(2).
+           02 DIA-ORDEN            PIC    9(2).
            02 TRANSF-MES           PIC    9(2).
            02 TRANSF-ANO           PIC    9(4).
            02 ULTIMA-MENSUALIDAD   PIC    9(2).
            02 ULTIMO-ANO           PIC    9(4).
-           02 SALDO-ORIGEN-ENT     PIC   S9(9).
-           02 SALDO-ORIGEN-DEC     PIC    9(2).
-           02 SALDO-DESTINO-ENT    PIC   S9(9).
-           02 SALDO-DESTINO-DEC    PIC    9(2).
 
        FD F-MOVIMIENTOS
            LABEL RECORD STANDARD
@@ -77,7 +75,6 @@
            02 MOV-ANO              PIC   9(4).
            02 MOV-MES              PIC   9(2).
            02 MOV-DIA              PIC   9(2).
-           02 DIA-ORDEN            PIC    9(2).
            02 MOV-HOR              PIC   9(2).
            02 MOV-MIN              PIC   9(2).
            02 MOV-SEG              PIC   9(2).
@@ -93,10 +90,6 @@
        77 FSI                      PIC  X(2).
        77 FSTM                     PIC  X(2).
        77 FSM                      PIC  X(2).
-       77 SALDO-USUARIO-ENT        PIC  S9(9).
-       77 SALDO-USUARIO-DEC        PIC  9(2).
-       77 TIPO-TRANSF              PIC  9(1).
-       77 MES-VAR                  PIC  9(2).
 
        78 BLACK   VALUE 0.
        78 BLUE    VALUE 1.
@@ -127,14 +120,21 @@
            88 DOWN-ARROW-PRESSED  VALUE 2004.
            88 ESC-PRESSED         VALUE 2005.
 
-       77 LAST-MOV-NUM-USER        PIC  9(35).
        77 PRESSED-KEY              PIC  9(4).
        77 PIN-INTRODUCIDO          PIC  9(4).
        77 CHOICE                   PIC  9(1).
 
-       77 LAST-MOV-NUM             PIC   9(35).
-       77 NUM-MENSUALIDADES        PIC   9(4).
+       77 LAST-MOV-NUM             PIC  9(35).
+       77 TIPO-TRANSF              PIC  9(1).
+       77 MES-VAR                  PIC  9(2).
 
+       77 LAST-USER-ORD-MOV-NUM    PIC  9(35).
+       77 LAST-USER-DST-MOV-NUM    PIC  9(35).
+       77 CENT-SALDO-ORD-USER      PIC  S9(9).
+       77 CENT-SALDO-DST-USER      PIC  S9(9).
+       77 CENT-IMPOR-USER          PIC  S9(9).
+
+       77 NUM-MENSUALIDADES        PIC   9(4).
        77 BUCLE-MES                PIC   9(4).
        77 BUCLE-ANO                PIC   9(4).
 
@@ -147,6 +147,7 @@
                PIC 9(16) USING TNUM.
            05 PIN-ACCEPT BLANK ZERO SECURE LINE 09 COL 50
                PIC 9(4) USING PIN-INTRODUCIDO.
+
 
 
        PROCEDURE DIVISION.
@@ -180,11 +181,10 @@
 
            DISPLAY "Enter - Aceptar" LINE 24 COL 33.
 
-
        P1-ENTER.
-           *> NUEVO
+           CLOSE TRANSFERENCIAS.
            OPEN I-O TRANSFERENCIAS.
-           IF FSTM <> 00 AND FSTM <> 41 THEN
+           IF FSTM <> 00 THEN
                PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA
                DISPLAY FSTM LINE 9 COL 25
                    WITH FOREGROUND-COLOR IS BLACK
@@ -196,7 +196,6 @@
                GO TO EXIT-ENTER
            END-IF.
            MOVE 0 TO LAST-MOV-NUM
-           *>
            ACCEPT OMITTED ON EXCEPTION
            IF ENTER-PRESSED
                *>GO TO P2
@@ -206,9 +205,13 @@
 
 
        LEER-TRANSF.
+           *>CLOSE F-MOVIMIENTOS.
            READ TRANSFERENCIAS NEXT RECORD AT END GO TO P2.
-               IF (TRANSF-NUM > LAST-MOV-NUM)
-                   MOVE TRANSF-NUM TO LAST-MOV-NUM
+               DISPLAY TRANSF-DIA LINE 28 COL 20.
+               DISPLAY DIA-ORDEN LINE 28 COL 30.
+               DISPLAY TRANSF-MES LINE 28 COL 34.
+               DISPLAY ULTIMA-MENSUALIDAD LINE 29 COL 28.
+               *>GO TO EXIT-ENTER.
                IF (TRANSF-MES <> 00) THEN
                   IF ((ANO > TRANSF-ANO OR
                       (ANO = TRANSF-ANO AND MES > TRANSF-MES) OR
@@ -218,23 +221,40 @@
                            GO TO PCONSULTA-SALDO
                ELSE
                   COMPUTE MES-VAR = ULTIMA-MENSUALIDAD + 1
-
-                  IF((DIA > TRANSF-DIA AND DIA-ORDEN < TRANSF-DIA
-                      AND ULTIMA-MENSUALIDAD = 0)
+                   DISPLAY TARJETA-ORIGEN LINE 30 COL 28.
+                  IF((DIA >= TRANSF-DIA AND DIA-ORDEN <= TRANSF-DIA
+                      AND ULTIMA-MENSUALIDAD = 00)
                       OR (MES > ULTIMA-MENSUALIDAD AND
                       (DIA > TRANSF-DIA OR MES > MES-VAR) AND
-                      ULTIMA-MENSUALIDAD <> 0)) THEN
+                      ULTIMA-MENSUALIDAD <> 00)) THEN
                            MOVE 2 TO TIPO-TRANSF
                            GO TO PCONSULTA-SALDO
                END-IF.
+               GO TO EXIT-ENTER.
 
                GO TO LEER-TRANSF.
                *>GO TO P2.
 
-       GUARDAR-TRANSF-1.
-           OPEN I-O F-MOVIMIENTOS.
 
-           *>MOVE TRANSF-NUM TO LAST-MOV-NUM.
+
+       GUARDAR-TRANSF-1.
+
+           MOVE LAST-USER-ORD-MOV-NUM TO MOV-NUM.
+           OPEN I-O F-MOVIMIENTOS.
+           IF FSM <> 00
+               GO TO PSYS-ERR.
+           READ F-MOVIMIENTOS INVALID KEY GO PSYS-ERR.
+
+           COMPUTE CENT-SALDO-ORD-USER = (MOV-SALDOPOS-ENT * 100)
+                                       + MOV-SALDOPOS-DEC.
+           COMPUTE CENT-IMPOR-USER = (TRANSF-IMPORTE-ENT * 100)
+                                   + TRANSF-IMPORTE-DEC
+           SUBTRACT CENT-IMPOR-USER FROM CENT-SALDO-ORD-USER.
+           COMPUTE MOV-SALDOPOS-ENT = (CENT-SALDO-ORD-USER / 100).
+           MOVE FUNCTION MOD(CENT-SALDO-ORD-USER, 100)
+               TO MOV-SALDOPOS-DEC.
+
+
            ADD 1 TO LAST-MOV-NUM.
 
            MOVE LAST-MOV-NUM TO MOV-NUM.
@@ -246,15 +266,26 @@
            MOVE 0 TO MOV-MIN.
            MOVE 0 TO MOV-SEG.
            MOVE "Transferimos." TO MOV-CONCEPTO.
-           MOVE SALDO-ORIGEN-ENT TO MOV-SALDOPOS-ENT.
-           MOVE SALDO-ORIGEN-DEC TO MOV-SALDOPOS-DEC.
 
            MULTIPLY -1 BY TRANSF-IMPORTE-ENT.
            MOVE TRANSF-IMPORTE-ENT TO MOV-IMPORTE-ENT.
-           MULTIPLY -1 BY TRANSF-IMPORTE-DEC.
+           MULTIPLY -1 BY TRANSF-IMPORTE-ENT.
            MOVE TRANSF-IMPORTE-DEC TO MOV-IMPORTE-DEC.
 
            WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR.
+
+           CLOSE F-MOVIMIENTOS.
+           MOVE LAST-USER-DST-MOV-NUM TO MOV-NUM.
+           OPEN I-O F-MOVIMIENTOS.
+           IF FSM <> 00
+               GO TO PSYS-ERR.
+           READ F-MOVIMIENTOS INVALID KEY GO PSYS-ERR.
+           COMPUTE CENT-SALDO-DST-USER = (MOV-SALDOPOS-ENT * 100)
+                                       + MOV-SALDOPOS-DEC.
+           ADD CENT-IMPOR-USER TO CENT-SALDO-DST-USER.
+           COMPUTE MOV-SALDOPOS-ENT = (CENT-SALDO-DST-USER / 100).
+           MOVE FUNCTION MOD(CENT-SALDO-DST-USER, 100)
+               TO MOV-SALDOPOS-DEC.
 
            ADD 1 TO LAST-MOV-NUM.
 
@@ -269,9 +300,6 @@
            MOVE 0 TO MOV-MIN.
            MOVE 0 TO MOV-SEG.
            MOVE "Nos transfieren." TO MOV-CONCEPTO.
-           MOVE SALDO-DESTINO-ENT TO MOV-SALDOPOS-ENT.
-           MOVE SALDO-DESTINO-DEC TO MOV-SALDOPOS-DEC.
-
 
            WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR.
            CLOSE F-MOVIMIENTOS.
@@ -279,10 +307,28 @@
 
        GUARDAR-TRANSF-2.
 
-           IF (ULTIMA-MENSUALIDAD = 0) THEN
-               OPEN I-O F-MOVIMIENTOS
+           IF (ULTIMA-MENSUALIDAD = 00) THEN
 
-               ADD 1 TO LAST-MOV-NUM.
+
+               MOVE LAST-USER-ORD-MOV-NUM TO MOV-NUM
+               OPEN I-O F-MOVIMIENTOS
+               *>IF FSM <> 00
+                   *>GO TO PSYS-ERR.
+               READ F-MOVIMIENTOS INVALID KEY GO PSYS-ERR
+
+               COMPUTE CENT-SALDO-ORD-USER = (MOV-SALDOPOS-ENT * 100)
+                                         + MOV-SALDOPOS-DEC
+
+               COMPUTE CENT-IMPOR-USER = (TRANSF-IMPORTE-ENT * 100)
+                                     + TRANSF-IMPORTE-DEC
+
+               SUBTRACT CENT-IMPOR-USER FROM CENT-SALDO-ORD-USER
+
+               COMPUTE MOV-SALDOPOS-ENT = (CENT-SALDO-ORD-USER / 100)
+               MOVE FUNCTION MOD(CENT-SALDO-ORD-USER, 100)
+                   TO MOV-SALDOPOS-DEC
+
+               ADD 1 TO LAST-MOV-NUM
 
                MOVE LAST-MOV-NUM TO MOV-NUM
                MOVE TARJETA-ORIGEN TO MOV-TARJETA
@@ -293,20 +339,33 @@
                MOVE 0 TO MOV-MIN
                MOVE 0 TO MOV-SEG
                MOVE "Transferimos." TO MOV-CONCEPTO
-               MOVE SALDO-ORIGEN-ENT TO MOV-SALDOPOS-ENT
-               MOVE SALDO-ORIGEN-DEC TO MOV-SALDOPOS-DEC
+
 
                MULTIPLY -1 BY TRANSF-IMPORTE-ENT
                MOVE TRANSF-IMPORTE-ENT TO MOV-IMPORTE-ENT
-               MULTIPLY -1 BY TRANSF-IMPORTE-DEC
+               MULTIPLY -1 BY TRANSF-IMPORTE-ENT
                MOVE TRANSF-IMPORTE-DEC TO MOV-IMPORTE-DEC
 
-               WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR
+               WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR.
+
+               CLOSE F-MOVIMIENTOS.
+               MOVE LAST-USER-DST-MOV-NUM TO MOV-NUM
+               OPEN I-O F-MOVIMIENTOS.
+               *>IF FSM <> 00
+                   *>GO TO PSYS-ERR.
+               READ F-MOVIMIENTOS INVALID KEY GO PSYS-ERR
+
+               COMPUTE CENT-SALDO-DST-USER = (MOV-SALDOPOS-ENT * 100)
+                                         + MOV-SALDOPOS-DEC
+               ADD CENT-IMPOR-USER TO CENT-SALDO-DST-USER
+               COMPUTE MOV-SALDOPOS-ENT = (CENT-SALDO-DST-USER / 100)
+               MOVE FUNCTION MOD(CENT-SALDO-DST-USER, 100)
+                   TO MOV-SALDOPOS-DEC.
 
                ADD 1 TO LAST-MOV-NUM
-
                MOVE LAST-MOV-NUM TO MOV-NUM
                MOVE TARJETA-DESTINO TO MOV-TARJETA
+
                MOVE TRANSF-IMPORTE-ENT TO MOV-IMPORTE-ENT
                MOVE TRANSF-IMPORTE-DEC TO MOV-IMPORTE-DEC
                MOVE TRANSF-DIA TO MOV-DIA
@@ -316,21 +375,21 @@
                MOVE 0 TO MOV-MIN
                MOVE 0 TO MOV-SEG
                MOVE "Nos transfieren." TO MOV-CONCEPTO
-               MOVE SALDO-DESTINO-ENT TO MOV-SALDOPOS-ENT
-               MOVE SALDO-DESTINO-DEC TO MOV-SALDOPOS-DEC
+
 
                WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR
+               CLOSE F-MOVIMIENTOS
 
 
                IF ((TRANSF-MES > ULTIMA-MENSUALIDAD
                    AND TRANSF-ANO = ULTIMO-ANO)
-                   OR TRANSF-ANO > ULTIMO-ANO) THEN
+                   OR TRANSF-ANO > ULTIMO-ANO)
                        MOVE TRANSF-MES TO ULTIMA-MENSUALIDAD
 
-               IF (TRANSF-ANO > ULTIMO-ANO) THEN
-                   MOVE TRANSF-ANO TO ULTIMO-ANO
+               MOVE FUNCTION MAX(TRANSF-ANO ULTIMO-ANO) TO ULTIMO-ANO
 
                REWRITE TRANSF-REG
+
                GO TO LEER-TRANSF
 
            ELSE
@@ -352,13 +411,46 @@
                MOVE ULTIMO-ANO TO BUCLE-ANO
                ADD 1 TO BUCLE-ANO
 
+               MOVE LAST-USER-ORD-MOV-NUM TO MOV-NUM
+               OPEN I-O F-MOVIMIENTOS
+               IF FSM <> 00
+                   GO TO PSYS-ERR
+               READ F-MOVIMIENTOS INVALID KEY GO PSYS-ERR
+
+               COMPUTE CENT-SALDO-ORD-USER = (MOV-SALDOPOS-ENT * 100)
+                                           + MOV-SALDOPOS-DEC
+               COMPUTE CENT-IMPOR-USER = (TRANSF-IMPORTE-ENT * 100)
+                                       + TRANSF-IMPORTE-DEC
+               *>SUBTRACT CENT-IMPOR-USER FROM CENT-SALDO-ORD-USER.
+               *>COMPUTE MOV-SALDOPOS-ENT = (CENT-SALDO-ORD-USER / 100)
+               *>MOVE FUNCTION MOD(CENT-SALDO-ORD-USER, 100)
+                   *>TO MOV-SALDOPOS-DEC
+               CLOSE F-MOVIMIENTOS
+
+               MOVE LAST-USER-DST-MOV-NUM TO MOV-NUM
+               OPEN I-O F-MOVIMIENTOS
+               IF FSM <> 00
+                   GO TO PSYS-ERR
+               READ F-MOVIMIENTOS INVALID KEY GO PSYS-ERR
+               COMPUTE CENT-SALDO-DST-USER = (MOV-SALDOPOS-ENT * 100)
+                                         + MOV-SALDOPOS-DEC
+               CLOSE F-MOVIMIENTOS
+               *>ADD CENT-IMPOR-USER TO CENT-SALDO-DST-USER
+
+
            END-IF.
+
 
        BUCLE.
 
            OPEN I-O F-MOVIMIENTOS
 
            ADD 1 TO LAST-MOV-NUM
+
+           SUBTRACT CENT-IMPOR-USER FROM CENT-SALDO-ORD-USER.
+           COMPUTE MOV-SALDOPOS-ENT = (CENT-SALDO-ORD-USER / 100).
+           MOVE FUNCTION MOD(CENT-SALDO-ORD-USER, 100)
+               TO MOV-SALDOPOS-DEC.
 
            MOVE LAST-MOV-NUM TO MOV-NUM
            MOVE TARJETA-ORIGEN TO MOV-TARJETA
@@ -369,17 +461,20 @@
            MOVE 0 TO MOV-MIN
            MOVE 0 TO MOV-SEG
            MOVE "Transferimos." TO MOV-CONCEPTO
-           MOVE SALDO-ORIGEN-ENT TO MOV-SALDOPOS-ENT
-           MOVE SALDO-ORIGEN-DEC TO MOV-SALDOPOS-DEC
+
 
            MULTIPLY -1 BY TRANSF-IMPORTE-ENT
            MOVE TRANSF-IMPORTE-ENT TO MOV-IMPORTE-ENT
-           MULTIPLY -1 BY TRANSF-IMPORTE-DEC
+           MULTIPLY -1 BY TRANSF-IMPORTE-ENT
            MOVE TRANSF-IMPORTE-DEC TO MOV-IMPORTE-DEC
 
            WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR
 
            ADD 1 TO LAST-MOV-NUM
+           ADD CENT-IMPOR-USER TO CENT-SALDO-DST-USER
+           COMPUTE MOV-SALDOPOS-ENT = (CENT-SALDO-DST-USER / 100).
+               MOVE FUNCTION MOD(CENT-SALDO-DST-USER, 100)
+                   TO MOV-SALDOPOS-DEC.
 
            MOVE LAST-MOV-NUM TO MOV-NUM
            MOVE TARJETA-DESTINO TO MOV-TARJETA
@@ -392,8 +487,7 @@
            MOVE 0 TO MOV-MIN
            MOVE 0 TO MOV-SEG
            MOVE "Nos transfieren." TO MOV-CONCEPTO
-           MOVE SALDO-DESTINO-ENT TO MOV-SALDOPOS-ENT
-           MOVE SALDO-DESTINO-DEC TO MOV-SALDOPOS-DEC
+
 
            WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR
 
@@ -414,10 +508,12 @@
                 IF (BUCLE-ANO > ULTIMO-ANO) THEN
                    MOVE BUCLE-ANO TO ULTIMO-ANO
 
-                   REWRITE TRANSF-REG
+                REWRITE TRANSF-REG
+                GO TO LEER-TRANSF
            ELSE
                GO TO LEER-TRANSF
            END-IF.
+
 
        P2.
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
@@ -469,9 +565,7 @@
            DISPLAY "Elija una opcion y pulse Enter:" LINE 20 COL 20.
            DISPLAY "ESC - Salir" LINE 24 COL 34.
 
-
        PMENUA1.
-           CLOSE TRANSFERENCIAS.
            ACCEPT CHOICE LINE 20 COL 52 ON EXCEPTION
                IF ESC-PRESSED
                    GO TO IMPRIMIR-CABECERA
@@ -594,13 +688,6 @@
            MOVE 3 TO IINTENTOS.
            REWRITE INTENTOSREG INVALID KEY GO TO PSYS-ERR.
 
-       EXIT-ENTER.
-           ACCEPT PRESSED-KEY LINE 24 COL 80.
-           IF ENTER-PRESSED
-               EXIT PROGRAM
-           ELSE
-               GO TO EXIT-ENTER.
-+
 
        PCONSULTA-SALDO.
            OPEN INPUT F-MOVIMIENTOS.
@@ -608,38 +695,40 @@
               GO TO PSYS-ERR.
 
            MOVE 0 TO LAST-MOV-NUM.
-
+           MOVE 0 TO LAST-USER-ORD-MOV-NUM.
+           MOVE 0 TO LAST-USER-DST-MOV-NUM.
 
        LECTURA-MOV.
            READ F-MOVIMIENTOS NEXT RECORD AT END GO LAST-MOV-FOUND.
-              IF MOV-TARJETA = TNUM
-                  IF LAST-MOV-NUM-USER < MOV-NUM
-                      MOVE MOV-NUM TO LAST-MOV-NUM-USER.
-              GO LECTURA-MOV.
+
+               IF MOV-TARJETA = TARJETA-ORIGEN THEN
+                   IF LAST-USER-ORD-MOV-NUM < MOV-NUM THEN
+                       MOVE MOV-NUM TO LAST-USER-ORD-MOV-NUM
+                   END-IF
+               END-IF.
+               IF MOV-TARJETA = TARJETA-DESTINO THEN
+                   DISPLAY "FOUND" LINE 28 COL 28
+
+                   IF LAST-USER-DST-MOV-NUM < MOV-NUM THEN
+                       MOVE MOV-NUM TO LAST-USER-DST-MOV-NUM
+                   END-IF
+               END-IF.
+               IF LAST-MOV-NUM < MOV-NUM
+                   MOVE MOV-NUM TO LAST-MOV-NUM.
+               GO LECTURA-MOV.
 
        LAST-MOV-FOUND.
            CLOSE F-MOVIMIENTOS.
-           IF LAST-MOV-NUM = 0 THEN
-               MOVE 0 TO SALDO-USUARIO-ENT.
-               MOVE 0 TO SALDO-USUARIO-DEC.
-               IF TIPO-TRANSF = 1 THEN
-                   GO TO GUARDAR-TRANSF-1
-               ELSE
-                   GO TO GUARDAR-TRANSF-2
-               END-IF.
-
-           MOVE LAST-MOV-NUM TO MOV-NUM.
-           OPEN INPUT F-MOVIMIENTOS.
-           IF FSM <> 00
-               GO TO PSYS-ERR.
-
-           READ F-MOVIMIENTOS INVALID KEY GO PSYS-ERR.
-
-           MOVE MOV-SALDOPOS-ENT TO SALDO-USUARIO-ENT.
-           MOVE MOV-SALDOPOS-DEC TO SALDO-USUARIO-DEC.
 
            IF TIPO-TRANSF = 1 THEN
                GO TO GUARDAR-TRANSF-1
            ELSE
                GO TO GUARDAR-TRANSF-2
            END-IF.
+
+       EXIT-ENTER.
+           ACCEPT PRESSED-KEY LINE 24 COL 80.
+           IF ENTER-PRESSED
+               EXIT PROGRAM
+           ELSE
+               GO TO EXIT-ENTER.
