@@ -2,7 +2,7 @@ package application;
 
 import java.io.IOException;
 
-import conexion.ConexionMusicSP;
+import conexion.MusicSP;
 import conexion.ConexionWS3270;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 public class LoginAction {
 	
 	ConexionWS3270 comunicacionWS = ConexionWS3270.getInstancia();
-    ConexionMusicSP comunicacionSP = ConexionMusicSP.getInstancia(comunicacionWS);
+    MusicSP comunicacionSP = MusicSP.getInstancia(comunicacionWS);
 
 	 @FXML
 	 private Button botonValidar;

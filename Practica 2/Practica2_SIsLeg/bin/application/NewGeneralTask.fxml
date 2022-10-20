@@ -40,27 +40,17 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label text="Task number:">
+            <Label text="Descripcion: ">
                <font>
                   <Font size="20.0" />
                </font>
             </Label>
-            <Label text="Task name:" GridPane.rowIndex="1">
+            <Label text="Date (DD/MM):" GridPane.rowIndex="1">
                <font>
                   <Font size="20.0" />
                </font>
             </Label>
-            <Label text="Description:" GridPane.rowIndex="2">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Label>
-            <Label text="Date (DD/MM/AA):" GridPane.rowIndex="3">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Label>
-            <TextField fx:id="campoNumero" GridPane.columnIndex="1">
+            <TextField fx:id="campoDescripcion" GridPane.columnIndex="1">
                <font>
                   <Font size="20.0" />
                </font>
@@ -68,23 +58,7 @@
                   <Insets right="55.0" />
                </GridPane.margin>
             </TextField>
-            <TextField fx:id="campoNombre" GridPane.columnIndex="1" GridPane.rowIndex="1">
-               <font>
-                  <Font size="20.0" />
-               </font>
-               <GridPane.margin>
-                  <Insets right="55.0" />
-               </GridPane.margin>
-            </TextField>
-            <TextField fx:id="campoDescripcion" GridPane.columnIndex="1" GridPane.rowIndex="2">
-               <font>
-                  <Font size="20.0" />
-               </font>
-               <GridPane.margin>
-                  <Insets right="55.0" />
-               </GridPane.margin>
-            </TextField>
-            <DatePicker fx:id="campoFecha" prefHeight="38.0" prefWidth="247.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <DatePicker fx:id="campoFecha" prefHeight="38.0" prefWidth="247.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
          </children>
          <BorderPane.margin>
             <Insets top="15.0" />

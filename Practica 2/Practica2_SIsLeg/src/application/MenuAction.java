@@ -2,7 +2,7 @@ package application;
 
 import java.io.IOException;
 
-import conexion.ConexionMusicSP;
+import conexion.MusicSP;
 import conexion.ConexionWS3270;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 public class MenuAction {
 	
 	ConexionWS3270 comunicacionWS = ConexionWS3270.getInstancia();
-    ConexionMusicSP comunicacionSP = ConexionMusicSP.getInstancia(comunicacionWS);
+    MusicSP comunicacionSP = MusicSP.getInstancia(comunicacionWS);
 	
 	@FXML
     private Button botonNewTaskFile;
@@ -67,12 +67,28 @@ public class MenuAction {
 	
 	@FXML
 	private void botonGetGeneralTareas() {
-	    
+		Stage ventana = MainApp.primaryStage;
+        Scene escena = ventana.getScene();
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MainApp.class.getResource("ListGeneralTask.fxml"));
+        try {
+            escena.setRoot(loader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 	
 	@FXML
 	private void botonGetSpecificTareas() {
-	    
+		Stage ventana = MainApp.primaryStage;
+        Scene escena = ventana.getScene();
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MainApp.class.getResource("ListSpecificTask.fxml"));
+        try {
+            escena.setRoot(loader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 	
 	@FXML
