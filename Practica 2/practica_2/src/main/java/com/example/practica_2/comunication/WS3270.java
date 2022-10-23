@@ -15,6 +15,8 @@ public class WS3270 {
     protected static final String MORE = "More...";
     protected static final String CADENA_CONEXION = "connect %s:%s";
 
+    private static WS3270 session = null;
+
     //private static Comunicacion3270WS instancia = null;
 
     public WS3270() {
@@ -31,12 +33,12 @@ public class WS3270 {
         }
     }
 
-    /*public static Comunicacion3270WS getInstancia() {
-        if (instancia == null) {
-            instancia = new Comunicacion3270WS();
+    public static WS3270 getSession() {
+        if (session == null) {
+            session = new WS3270();
         }
-        return instancia;
-    }*/
+        return session;
+    }
 
     public void escribirLinea(String cadena) throws InterruptedException {
         do {
@@ -94,43 +96,39 @@ public class WS3270 {
     }
 
 
-    public boolean login(String usuario, String contrasena) throws InterruptedException {
-        //Escribe el nombre de usuario
-        //Si no es v�lido pulsa F3 y Enter para limpiar campos
-        //y devolver� FALSE
+    public int login(String usuario, String pass) throws InterruptedException {
+        //Escribir nombre de usuario
         escribirCadena(usuario);
         enter();
-        //System.out.println(leerPantalla().toString());
+        // Si el usuario no es valido pulsa F3 para cancelar
         if (buscarCadena("Userid is not authorized")) {
             System.out.println("Userid is not authorized");
             teclaFuncion(3);
             enter();
-            return false;
+            return -1;
         }
-        //Escribe la contrase�a
-        //Si no es v�lida pulsa F3 y Enter para limpiar campos
-        //y devolver� FALSE
-        escribirCadena(contrasena);
-        //System.out.println(leerPantalla().toString());
+        //Escribir pass
+        escribirCadena(pass);
         enter();
+        // Si pass no es valida pulsa F3 para cancelar
         if (buscarCadena("Password incorrect!")) {
             teclaFuncion(3);
             enter();
-            return false;
+            return -2;
         }
-        //Si ya hay un usuario con el mismo ID connectado
-        //Lanza una excepci�n
+        // Si el ID esta en uso se fuerza el acceso
         if (buscarCadena("Userid is in use.")) {
-            return false;
+            return -3;
         }
-        //Si la contrase�a es v�lida devolver� TRUE
-        //y ejecutar� el programa
+
+        // Si esta correcto devuelve true
         if (buscarCadena("Press ENTER to continue...")) {
             enter();
             comenzarPrograma();
-            return true;
+            return 0;
         }
-        return false;
+        // Por defecto devuelve false
+        return -1;
     }
 
     public void teclaFuncion(int teclaF) throws InterruptedException {
