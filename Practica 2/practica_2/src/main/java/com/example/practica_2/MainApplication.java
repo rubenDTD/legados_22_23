@@ -14,7 +14,7 @@ public class MainApplication extends Application {
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("Portada.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        Scene scene = new Scene(fxmlLoader.load(), 640, 480);
         String titulo = "Wrapper 3270";
         stage.setTitle(titulo);
         stage.setScene(scene);

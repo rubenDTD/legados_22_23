@@ -15,6 +15,8 @@ public class WS3270 {
     protected static final String MORE = "More...";
     protected static final String CADENA_CONEXION = "connect %s:%s";
 
+    protected static final int delay = 200;
+
     private static WS3270 session = null;
 
     //private static Comunicacion3270WS instancia = null;
@@ -46,9 +48,7 @@ public class WS3270 {
             this.teclado.write(cadena);
             this.teclado.flush();
         } while (leerPantalla().toString().contains(OK));
-        Thread.sleep(100);
-
-        //Espera una se�al de OK o de MORE...
+        Thread.sleep(delay);
     }
 
 
@@ -56,7 +56,7 @@ public class WS3270 {
         cadena += "\n";
         this.teclado.write(cadena);
         this.teclado.flush();
-        Thread.sleep(100);
+        Thread.sleep(delay);
     }
 
     public void conectar(String ip, String puerto) throws RuntimeException, InterruptedException {
@@ -128,7 +128,7 @@ public class WS3270 {
             return 0;
         }
         // Por defecto devuelve false
-        return -1;
+        return -10;
     }
 
     public void teclaFuncion(int teclaF) throws InterruptedException {
@@ -143,10 +143,12 @@ public class WS3270 {
     }
 
 
-    public boolean hayMasTexto() throws InterruptedException {
+    public void hayMasTexto() throws InterruptedException {
         ascii();
         String cadenaAux = leerPantalla().toString();
-        return cadenaAux.contains(MORE);
+        if(cadenaAux.contains(MORE)) {
+            enter();
+        }
     }
 
     public boolean buscarCadena(String cadena) throws InterruptedException {
