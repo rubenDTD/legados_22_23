@@ -118,7 +118,8 @@ public class WS3270 {
         }
         // Si el ID esta en uso se fuerza el acceso
         if (buscarCadena("Userid is in use.")) {
-            return -3;
+            escribirCadena("OK");
+            enter();
         }
 
         // Si esta correcto devuelve true

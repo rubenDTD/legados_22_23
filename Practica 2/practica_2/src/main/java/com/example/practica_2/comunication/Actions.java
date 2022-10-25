@@ -71,33 +71,6 @@ public class Actions {
         enterTareas();
     }
 
-    /*public ArrayList<TareaGeneral> getTareasGenerales() throws InterruptedException {
-        ArrayList<TareaGeneral> tareas = new ArrayList<>();
-        session.escribirCadena("2");
-        enterTareas();
-        session.escribirCadena("1");
-        enterTareas();
-        // En este punto se estan viendo las tareas
-        session.ascii();
-        StringBuilder pantalla = session.leerPantalla();
-        System.out.println("Pantalla tareas: " + pantalla.toString());
-
-
-        return tareas;
-    }
-
-    public ArrayList<TareaEspecifica> getTareasEspecificas() throws InterruptedException {
-        ArrayList<TareaEspecifica> tareas = new ArrayList<>();
-        session.escribirCadena("2");
-        enterTareas();
-        session.escribirCadena("2");
-        enterTareas();
-        // En este punto se estan viendo las tareas
-
-
-        return tareas;
-    }*/
-
     public void volverAMenu() throws InterruptedException {
         enterTareas();
         session.escribirCadena("3");
@@ -121,8 +94,8 @@ public class Actions {
 			String s = session.leerPantalla().toString();
 			session.escribirCadena("3");
 			session.enter();
-			ArrayList<TareaGeneral> tareas = new ArrayList<TareaGeneral>(); 
-			int start = s.indexOf("data: TASK ");		
+			ArrayList<TareaGeneral> tareas = new ArrayList<TareaGeneral>();
+			int start = s.indexOf("data: TASK ");
 			int end = s.indexOf("\r\n",start);
 			int next = s.indexOf("data: TASK ",end);
 			while(next != -1) {
@@ -134,11 +107,11 @@ public class Actions {
 					System.out.println(sAux);
 					int initFecha = (sAux.indexOf("GENERAL ")) + 8;
 					int initDesc = sAux.indexOf("----- ",initFecha) + 6;
-					String fecha = sAux.substring(initFecha,initFecha + 4);				
-					int finDesc = initDesc;				
+					String fecha = sAux.substring(initFecha,initFecha + 4);
+					int finDesc = initDesc;
 					while(finDesc < sAux.length() && Character.isLetter(sAux.charAt(finDesc))) {
 						finDesc++;
-					}			
+					}
 					String desc = sAux.substring(initDesc,finDesc);
 					String num = sAux.substring(11,sAux.indexOf(":",11));
 					TareaGeneral t = new TareaGeneral(num,desc,fecha);
@@ -147,7 +120,7 @@ public class Actions {
 				start = next;
 				next = s.indexOf("data: TASK ",start+1);
 				if(next == -1 && s.substring(start,start+15).contains("data: TASK ")) {
-					if((s.indexOf(" GENERAL",start) - start) < 17) {						
+					if((s.indexOf(" GENERAL",start) - start) < 17) {
 						end = s.indexOf("\r\n",start);
 						String sAux;
 						if(end != -1) {sAux = s.substring(start,end);}
@@ -155,32 +128,31 @@ public class Actions {
 						System.out.println(sAux);
 						int initFecha = (sAux.indexOf("GENERAL ")) + 8;
 						int initDesc = sAux.indexOf("----- ",initFecha) + 6;
-						String fecha = sAux.substring(initFecha,initFecha + 4);				
-						int finDesc = initDesc;				
+						String fecha = sAux.substring(initFecha,initFecha + 4);
+						int finDesc = initDesc;
 						while(finDesc < sAux.length() && Character.isLetter(sAux.charAt(finDesc))) {
 							finDesc++;
-						}			
+						}
 						String desc = sAux.substring(initDesc,finDesc);
 						String num = sAux.substring(11,sAux.indexOf(":",11));
 						TareaGeneral t = new TareaGeneral(num,desc,fecha);
 						tareas.add(t);
 					}
 				}
-			}												
+			}
 			return tareas;
 		} catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+			e.printStackTrace();
+			return null;
+		}
 	}
-
 
     public ArrayList<TareaEspecifica> getTareasEspecificas() {
 		try {
 			session.escribirCadena("2");
-			session.enter();
+			enterTareas();
 			session.escribirCadena("2");
-			session.enter();
+			enterTareas();
 			session.ascii();
 			String s = session.leerPantalla().toString();
 			session.escribirCadena("3");
