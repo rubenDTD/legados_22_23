@@ -46,7 +46,7 @@ public class ListGeneralTaskAction {
 
     @FXML
     private void botonSalir() throws InterruptedException {
-        acciones.volverAMenu();
+        //acciones.volverAMenu();
         Stage ventana = MainApplication.primaryStage;
         Scene escena = ventana.getScene();
         FXMLLoader loader = new FXMLLoader();

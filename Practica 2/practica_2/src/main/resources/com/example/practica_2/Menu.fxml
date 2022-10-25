@@ -19,7 +19,7 @@
     <center>
         <GridPane alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="281.0" prefWidth="600.0" BorderPane.alignment="CENTER">
             <children>
-                <Button onAction="#botonNewGeneralTask" text="Add Geneal Task" GridPane.halignment="CENTER">
+                <Button onAction="#botonNewGeneralTask" text="Add General Task" GridPane.halignment="CENTER">
                     <font>
                         <Font size="20.0" />
                     </font>
@@ -33,7 +33,7 @@
                     <GridPane.margin>
                         <Insets bottom="5.0" top="5.0" />
                     </GridPane.margin></Button>
-                <Button onAction="#botonGetGeneralTareas" text="List Geneal Tasks" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                <Button onAction="#botonGetGeneralTareas" text="List General Tasks" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                     <font>
                         <Font size="20.0" />
                     </font>

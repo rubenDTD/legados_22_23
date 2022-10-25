@@ -92,14 +92,19 @@ public class Actions {
 			session.enter();
 			session.ascii();
 			String s = session.leerPantalla().toString();
+			if(s.contains("More...")) {
+	            session.enter();
+	        }
 			session.escribirCadena("3");
 			session.enter();
 			ArrayList<TareaGeneral> tareas = new ArrayList<TareaGeneral>();
 			int start = s.indexOf("data: TASK ");
 			int end = s.indexOf("\r\n",start);
-			int next = s.indexOf("data: TASK ",end);
-			while(next != -1) {
+			int next = s.indexOf("data: TASK ",end);	
+			while(start != -1) {
+				System.out.println("while");
 				if((s.indexOf(" GENERAL",start) - start) < 17) {
+					System.out.println("if");
 					end = s.indexOf("\r\n",start);
 					String sAux;
 					if(end != -1) {sAux = s.substring(start,end);}
@@ -118,27 +123,7 @@ public class Actions {
 					tareas.add(t);
 				}
 				start = next;
-				next = s.indexOf("data: TASK ",start+1);
-				if(next == -1 && s.substring(start,start+15).contains("data: TASK ")) {
-					if((s.indexOf(" GENERAL",start) - start) < 17) {
-						end = s.indexOf("\r\n",start);
-						String sAux;
-						if(end != -1) {sAux = s.substring(start,end);}
-						else {sAux = s.substring(start,s.indexOf("data: ",start+1));}
-						System.out.println(sAux);
-						int initFecha = (sAux.indexOf("GENERAL ")) + 8;
-						int initDesc = sAux.indexOf("----- ",initFecha) + 6;
-						String fecha = sAux.substring(initFecha,initFecha + 4);
-						int finDesc = initDesc;
-						while(finDesc < sAux.length() && Character.isLetter(sAux.charAt(finDesc))) {
-							finDesc++;
-						}
-						String desc = sAux.substring(initDesc,finDesc);
-						String num = sAux.substring(11,sAux.indexOf(":",11));
-						TareaGeneral t = new TareaGeneral(num,desc,fecha);
-						tareas.add(t);
-					}
-				}
+				next = s.indexOf("data: TASK ",start+1);				
 			}
 			return tareas;
 		} catch (Exception e) {
@@ -155,13 +140,16 @@ public class Actions {
 			enterTareas();
 			session.ascii();
 			String s = session.leerPantalla().toString();
+			if(s.contains("More...")) {
+	            session.enter();
+	        }
 			session.escribirCadena("3");
 			session.enter();
 			ArrayList<TareaEspecifica> tareas = new ArrayList<TareaEspecifica>(); 
 			int start = s.indexOf("data: TASK ");		
 			int end = s.indexOf("\r\n",start);
 			int next = s.indexOf("data: TASK ",end);
-			while(next != -1) {
+			while(start != -1) {
 				if((s.indexOf(" SPECIFIC",start) - start) < 17) {
 					end = s.indexOf("\r\n",start);
 					String sAux;
@@ -185,30 +173,7 @@ public class Actions {
 				}
 				start = next;
 				next = s.indexOf("data: TASK ",start+1);
-				if(next == -1 && s.substring(start,start+15).contains("data: TASK ")) {
-					if((s.indexOf(" SPECIFIC",start) - start) < 17) {
-						end = s.indexOf("\r\n",start);
-						String sAux;
-						if(end != -1) {sAux = s.substring(start,end);}
-						else {sAux = s.substring(start,s.indexOf("data: ",start+1));}
-						System.out.println(sAux);
-						int initFecha = (sAux.indexOf("SPECIFIC ")) + 9;
-						int initNom = initFecha + 5;												
-						int initDesc = (sAux.indexOf(" ",initNom)) + 1;																
-						String fecha = sAux.substring(initFecha,initFecha + 4);
-						int finDesc = initDesc;
-						while(finDesc < sAux.length() && Character.isLetter(sAux.charAt(finDesc))) {
-							finDesc++;
-						}
-						String nombre = sAux.substring(initNom,initDesc-1);							
-						String desc = sAux.substring(initDesc,finDesc);												
-						//System.out.println(fecha+" "+desc+" "+nombre+"|||");
-						String num = sAux.substring(11,sAux.indexOf(":",11));
-						TareaEspecifica t = new TareaEspecifica(num,nombre,desc,fecha);
-						tareas.add(t);
-					}
-				}
-			}			
+			}
 			return tareas;
 		} catch (Exception e) {
             e.printStackTrace();
