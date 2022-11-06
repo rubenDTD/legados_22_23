@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>WEB MS-DOS/BASIC</title>
+    <link rel="style" href=index.css>
+</head>
+<body>
+    <div>
+        <div>
+            <h3 th:text="|Total de juegos: ${numGames}|"></h3>
+        </div>
+
+        <div>
+            <h3 th:text="|Buscar por nombre del juego|"></h3>
+            <form action="/listTitle">
+                    <input type="text" name="nombre" />
+                    <input type="submit" value="Buscar" />
+            </form>
+            <div>
+                <h3 th:text="${datosJuego}" ></h3>
+            </div>
+
+            <div>
+                <h3 th:text="|Buscar por cinta|"></h3>
+                <form action="/list">
+                        <input type="text" th:name="cinta" />
+                        <input type="submit" value="Buscar" />
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

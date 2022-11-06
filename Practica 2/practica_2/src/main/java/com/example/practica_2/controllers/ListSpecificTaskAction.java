@@ -43,7 +43,7 @@ public class ListSpecificTaskAction {
         tablaListar.getItems().clear();
         tablaListar.setItems(FXCollections.observableArrayList(acciones.getTareasEspecificas()));
         columnaNumero.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getNumero()));
-        columnaNumero.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getNombre()));
+        columnaNombre.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getNombre()));
         columnaDescripcion.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getDescripcion()));
         columnaFecha.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getFecha()));
     }

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>List all</title>
+</head>
+<body>
+<div style="margin: 20px;">
+    <button type="button" th:onclick="|window.location.href='/'|">Volver</button>
+</div>
+
+<div style="margin: 20px;">
+    <table>
+        <thead>
+        <tr>
+            <th>Nº</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Cinta</th>
+            <th>Registro</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:if="${datosLista==null}">
+            <td colspan="2"> No hay registros que coincidan </td>
+        </tr>
+        <tr th:each="dato : ${datosLista}">
+            <td><span th:text="${dato.num}"> Nº </span></td>
+            <td><span th:text="${dato.nombre}"> Nombre </span></td>
+            <td><span th:text="${dato.tipo}"> Tipo </span></td>
+            <td><span th:text="${dato.cinta}"> Cinta </span></td>
+            <td><span th:text="${dato.registro}"> Registro </span></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
