@@ -3,30 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <title>WEB MS-DOS/BASIC</title>
-    <link rel="style" href=index.css>
+    <style>
+        body {
+            background-color: black;
+        }
+        h1 {
+            color: white;
+            text-align:center;
+        }
+        h2 {
+            color: black;
+            text-decoration: underline;
+            text-align:center;
+        }
+        fieldset {
+            background-color: green;
+        }
+        form {
+            text-align:center;
+        }
+        input {
+            border: 2px solid black;
+            border-radius: 4px;
+            background-color: white;
+            color: black;
+        }
+    </style>
 </head>
 <body>
+    <h1> WEB MS-DOS/BASIC - Grupo_03</h1>
     <div>
         <div>
-            <h3 th:text="|Total de juegos: ${numGames}|"></h3>
+            <fieldset>
+            <h2 th:text="|Total de juegos: |"></h2>
+                <h1 th:text="${numGames}" style="color: black; font-style: italic"></h1>
+            </fieldset>
         </div>
 
         <div>
-            <h3 th:text="|Buscar por nombre del juego|"></h3>
+            <fieldset>
+            <h2 th:text="|Buscar por nombre del juego|"></h2>
             <form action="/listTitle">
                     <input type="text" name="nombre" />
                     <input type="submit" value="Buscar" />
             </form>
             <div>
-                <h3 th:text="${datosJuego}" ></h3>
+                <h1 th:text="${datosJuego}" style="color: black; font-style: italic"></h1>
             </div>
+            </fieldset>
 
             <div>
-                <h3 th:text="|Buscar por cinta|"></h3>
+                <fieldset>
+                <h2 th:text="|Buscar por cinta|"></h2>
                 <form action="/list">
                         <input type="text" th:name="cinta" />
                         <input type="submit" value="Buscar" />
                 </form>
+                </fieldset>
             </div>
         </div>
     </div>

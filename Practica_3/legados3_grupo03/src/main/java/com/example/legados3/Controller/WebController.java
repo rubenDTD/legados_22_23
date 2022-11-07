@@ -33,7 +33,6 @@ public class WebController {
 
     @GetMapping(path = "/list")
     public String getList(Model model, @RequestParam(name = "cinta") String cinta) {
-        //model.addAttribute("numGames", webService.totalGames());
         model.addAttribute("datosLista", webService.list(cinta));
         return "list";
     }

@@ -14,6 +14,7 @@ public class OCR {
         ocr.setDatapath("src/main/resources/tessdata");
     }
 
+    // Transforma una captura de pantalla en un string
     public String leerImagen(BufferedImage imagen){
         ocr.setLanguage("spa2");
         String result = "";

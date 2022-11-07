@@ -1,6 +1,7 @@
 package com.example.legados3.Wrapper;
 
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
@@ -32,4 +33,22 @@ public class Wrapper {
     public BufferedImage capturaPantalla(){
         return robot.createScreenCapture(new Rectangle(635, 130, 650, 400));
     }
+
+    // Mueve el cursor para abrir y cerrar la aplicacion legada
+    public void moveNavigateBar(){
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        robot.mouseMove(520, 700);
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+    }
+
 }
