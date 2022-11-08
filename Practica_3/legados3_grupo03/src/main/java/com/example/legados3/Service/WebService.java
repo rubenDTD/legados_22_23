@@ -76,6 +76,7 @@ public class WebService {
         wrapper.pulsarTecla('6'); // Seleccionamos la opcion de listar los juegos
         BufferedImage img = wrapper.capturaPantalla();
         String result = ocr.leerImagen(img);
+        System.out.println(result);
         if (result.contains("AMTIGUEDAD")){ // Ordenamos los juegos por el numero de cinta, si
             wrapper.pulsarTecla('\n');  // no lo estan ya
             wrapper.pulsarTecla('\n');
@@ -113,9 +114,19 @@ public class WebService {
             e.printStackTrace();
         }
         img.flush();
-        while (!result.contains("B K ACABAR")){ //Mientras que no se vuelva a la pantalla del menu
+        while (true){     //Mientras que no se vuelva a la pantalla del menu
+            if(result.contains("B K ACABAR")){
+                break;
+            } else if (result.contains("BMACABAR")){
+                break;
+            } else if (result.contains("8 K ACABAR")) {
+                break;
+            }
             String[] param; String nombreJuego;
             String[] listWords = result.split("\n"); // Guardamos los resultados en un array de juegos
+            for (String i: listWords){
+                System.out.println(i);
+            }
             for (int i=1; i<listWords.length-1; i++) {
                 param = listWords[i].split(" ");
                 if (param.length >= 5) {
