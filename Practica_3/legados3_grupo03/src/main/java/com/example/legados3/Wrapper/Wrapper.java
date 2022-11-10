@@ -11,13 +11,16 @@ public class Wrapper {
     private Robot robot;
 
     public Wrapper() throws AWTException {
+        System.setProperty("java.awt.headless", "false");
         robot = new Robot();
         robot.setAutoDelay(20);
         robot.waitForIdle();
+        System.setProperty("java.awt.headless", "true");
     }
 
     //Pulsa la tecla del caracter pasado como parametro
     public void pulsarTecla(char caracter){
+        System.setProperty("java.awt.headless", "false");
         try {
             Thread.sleep(200);
             if(Character.isUpperCase(caracter)){ robot.keyPress(KeyEvent.VK_SHIFT); }
@@ -27,15 +30,20 @@ public class Wrapper {
         } catch(Exception e) {
             e.printStackTrace();
         }
+        System.setProperty("java.awt.headless", "true");
     }
 
     // Captura la pantalla
     public BufferedImage capturaPantalla(){
-        return robot.createScreenCapture(new Rectangle(635, 130, 650, 400));
+        System.setProperty("java.awt.headless", "false");
+        BufferedImage i = robot.createScreenCapture(new Rectangle(635, 130, 650, 400));
+        System.setProperty("java.awt.headless", "true");
+        return i;
     }
 
     // Mueve el cursor para abrir y cerrar la aplicacion legada
     public void moveNavigateBar(){
+        System.setProperty("java.awt.headless", "false");
         try {
             Thread.sleep(1000);
         } catch (Exception e){
@@ -49,6 +57,7 @@ public class Wrapper {
         }
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+        System.setProperty("java.awt.headless", "true");
     }
 
 }

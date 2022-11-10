@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Legados3Application {
 
     public static void main(String[] args) {
-        System.setProperty("java.awt.headless", "false");
+        //System.setProperty("java.awt.headless", "false");
         SpringApplication.run(Legados3Application.class, args);
     }
 

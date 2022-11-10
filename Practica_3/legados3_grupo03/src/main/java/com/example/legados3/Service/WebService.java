@@ -26,9 +26,20 @@ public class WebService {
 
     // Funcion que devuelve el numero de juegos totales que hay en el sistema
     public String totalGames(){
+        ocr.cambiarLang(2);
         wrapper.moveNavigateBar();  // Movemos el raton y hacemos click para que se abra el programa
         wrapper.pulsarTecla('4'); // Selecionamos la opcion que muestra el total de juegos
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         BufferedImage img = wrapper.capturaPantalla(); // Capturamos la pantalla
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         String result = ocr.leerImagen(img);
         String[] listWords = result.split(" |\n"); // Leemos el dato que queremos
         wrapper.pulsarTecla('\n'); // Volvemos a la pantalla de MENU
@@ -38,6 +49,7 @@ public class WebService {
 
     // Funcion que devuelve la info. de un juego dado su nombre
     public String listDatos(String nombre){
+        ocr.cambiarLang(4);
         wrapper.moveNavigateBar(); // Movemos el raton y hacemos click para que se abra el programa
         wrapper.pulsarTecla('7'); // Seleccionamos la opcion de buscar un juego especifico
         wrapper.pulsarTecla('N'); // por su nombre
@@ -72,12 +84,23 @@ public class WebService {
 
     // Funcion que devuelve la lista de juegos dado el numero de cinta
     public ArrayList<Juego> list(String cinta){
+        ocr.cambiarLang(4);
         wrapper.moveNavigateBar(); // Movemos el raton y hacemos click para que se abra el programa
         wrapper.pulsarTecla('6'); // Seleccionamos la opcion de listar los juegos
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         BufferedImage img = wrapper.capturaPantalla();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         String result = ocr.leerImagen(img);
         System.out.println(result);
-        if (result.contains("AMTIGUEDAD")){ // Ordenamos los juegos por el numero de cinta, si
+        if (result.contains("AMTIGUEDAD") || result.contains("ANTIGUEDAD") || result.contains("AH?IGUEDAD")){ // Ordenamos los juegos por el numero de cinta, si
             wrapper.pulsarTecla('\n');  // no lo estan ya
             wrapper.pulsarTecla('\n');
             wrapper.pulsarTecla('3');
@@ -115,15 +138,20 @@ public class WebService {
         }
         img.flush();
         while (true){     //Mientras que no se vuelva a la pantalla del menu
-            if(result.contains("B K ACABAR")){
+            String[] listWords = result.split("\n"); // Guardamos los resultados en un array de juegos
+            if(OCR.calculate(listWords[0],"M E N U") <= 3){
+                System.out.println("IF");
+                break;
+            }
+            /*if(result.contains("B K ACABAR")){
                 break;
             } else if (result.contains("BMACABAR")){
                 break;
             } else if (result.contains("8 K ACABAR")) {
                 break;
-            }
+            }*/
             String[] param; String nombreJuego;
-            String[] listWords = result.split("\n"); // Guardamos los resultados en un array de juegos
+            //String[] listWords = result.split("\n"); // Guardamos los resultados en un array de juegos
             for (String i: listWords){
                 System.out.println(i);
             }
