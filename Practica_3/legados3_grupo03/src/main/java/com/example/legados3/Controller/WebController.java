@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.awt.*;
 
 @Controller
+@CrossOrigin(origins = "http://localhost:4200")
 public class WebController {
 
     private final WebService webService;

@@ -36,7 +36,7 @@
         <div>
             <fieldset>
             <h2 th:text="|Total de juegos: |"></h2>
-                <h1 th:text="${numGames}" style="color: black; font-style: italic"></h1>
+                <h1 th:text="${numGames}" id="numGames" style="color: black; font-style: italic"></h1>
             </fieldset>
         </div>
 
@@ -48,7 +48,7 @@
                     <input type="submit" value="Buscar" />
             </form>
             <div>
-                <h1 th:text="${datosJuego}" style="color: black; font-style: italic"></h1>
+                <h1 th:text="${datosJuego}" id="datosJuego" style="color: black; font-style: italic"></h1>
             </div>
             </fieldset>
 
