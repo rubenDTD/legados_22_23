@@ -4,6 +4,7 @@ import net.sourceforge.tess4j.Tesseract1;
 import net.sourceforge.tess4j.TesseractException;
 
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 /* Modulo OCR que sirve para leer caracteres de una imagen */
 public class OCR {

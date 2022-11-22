@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Service
 public class WebService {
@@ -42,6 +43,7 @@ public class WebService {
         }
         String result = ocr.leerImagen(img);
         String[] listWords = result.split(" |\n"); // Leemos el dato que queremos
+        System.out.println(Arrays.toString(listWords));
         wrapper.pulsarTecla('\n'); // Volvemos a la pantalla de MENU
         wrapper.moveNavigateBar();
         return listWords[5];

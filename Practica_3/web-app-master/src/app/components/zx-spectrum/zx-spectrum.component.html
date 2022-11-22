@@ -1,89 +1,93 @@
 <div class="card text-center">
-    <div class="card-header">
-      <h1>ZX-SPECTRUM</h1>
-    </div>
-    <div class="card-body">
-        <h2 class="card-title">Número de registros: {{total_juegos}}</h2>
+  <div class="card-header">
+    <h1>ZX-SPECTRUM</h1>
+  </div>
+  <div class="card-body">
+      <h2 class="card-title">Número de registros: {{total_juegos}}</h2>
 
 
-      <nav>
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-          <button class="nav-link active" id="nav-juego-tab" data-bs-toggle="tab" data-bs-target="#nav-juego" type="button" role="tab" aria-controls="nav-juego" aria-selected="true">Buscar juegos</button>
-          <button class="nav-link" id="nav-cinta-tab" data-bs-toggle="tab" data-bs-target="#nav-cinta" type="button" role="tab" aria-controls="nav-cinta" aria-selected="false">Listar cinta</button>
-        </div>
-      </nav>
-      <div class="tab-content" id="nav-tabContent">
-        <div class="tab-pane fade show active" id="nav-juego" role="tabpanel" aria-labelledby="nav-juego-tab">
-          <nav class="navbar navbar-light bg-light">
-            <div class="container-fluid">
-              <form class="d-flex">
-                <div class="input-group input-group-lg p-1">
-                  <input type="text" class="form-control" name="nombre_juego" [(ngModel)]="nombre_juego" placeholder="Introduce nombre del juego...">
-                </div>
-                <div class="btn-group p-1" role="group" aria-label="...">
-                  <button style="width: 200px;" class="btn btn-outline-success" type="button" (click)="buscarJuego()">Buscar juego</button>
-                </div>                
-              </form>
-              <table class="table p-3">
-                <thead>
-                  <tr>
-                    <th scope="col">Nº</th>
-                    <th scope="col">Juego</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Cinta</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let juego of datos_juego">
-                    <th scope="col">{{juego.numero}}</th>
-                    <th scope="col">{{juego.nombre}}</th>
-                    <th scope="col">{{juego.tipo}}</th>
-                    <th scope="col">{{juego.cinta}}</th>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </nav>
-        </div>
-        <div class="tab-pane fade" id="nav-cinta" role="tabpanel" aria-labelledby="nav-cinta-tab">
-          <nav class="navbar navbar-light bg-light">
-            <div class="container-fluid">
-              <form class="d-flex">
-                <div class="input-group input-group-lg p-1">
-                  <input type="text" class="form-control" placeholder="Introduce una cinta...">
-                </div>
-                <div class="btn-group p-1" role="group" aria-label="...">
-                  <button style="width: 200px;" class="btn btn-outline-success" type="button" (click)="buscarCinta()">Buscar programas</button>
-                </div>
-              </form>
-            </div>
-          </nav>
-          <table class="table p-3">
-            <thead>
-              <tr>
-                <th scope="col">Nº</th>
-                <th scope="col">Juego</th>
-                <th scope="col">Tipo</th>
-                <th scope="col">Cinta</th>
-                <th scope="col">Fecha de registro</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let juego_cinta of juegos_cinta">
-                <th scope="col">{{juego_cinta.numero}}</th>
-                <th scope="col">{{juego_cinta.nombre}}</th>
-                <th scope="col">{{juego_cinta.tipo}}</th>
-                <th scope="col">{{juego_cinta.cinta}}</th>
-                <th scope="col">{{juego_cinta.registro}}</th>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-juego-tab" data-bs-toggle="tab" data-bs-target="#nav-juego" type="button" role="tab" aria-controls="nav-juego" aria-selected="true">Buscar juegos</button>
+        <button class="nav-link" id="nav-cinta-tab" data-bs-toggle="tab" data-bs-target="#nav-cinta" type="button" role="tab" aria-controls="nav-cinta" aria-selected="false">Listar cinta</button>
       </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+
+
+      <div class="tab-pane fade show active" id="nav-juego" role="tabpanel" aria-labelledby="nav-juego-tab">
+        <nav class="navbar navbar-light bg-light">
+          <div class="container-fluid">
+            <form class="d-flex">
+              <div class="input-group input-group-lg p-1">
+                <input type="text" class="form-control" placeholder="Introduce nombre del juego...">
+              </div>
+              <div class="btn-group p-1" role="group" aria-label="...">
+                <button style="width: 200px;" class="btn btn-outline-success" type="button" (click)="buscarJuego()">Buscar juego</button>
+              </div>
+            </form>
+          </div>
+        </nav>
+        <table *ngIf="datos_juego != null" class="table p-3">
+          <thead>
+            <tr>
+              <th scope="col">Nº</th>
+              <th scope="col">Juego</th>
+              <th scope="col">Tipo</th>
+              <th scope="col">Cinta</th>
+              <th scope="col">Fecha de registro</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="col">{{datos_juego.numero}}</th>
+              <th scope="col">{{datos_juego.nombre}}</th>
+              <th scope="col">{{datos_juego.tipo}}</th>
+              <th scope="col">{{datos_juego.cinta}}</th>
+              <th scope="col">{{datos_juego.registro}}</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
+
+      <div class="tab-pane fade" id="nav-cinta" role="tabpanel" aria-labelledby="nav-cinta-tab">
+        <nav class="navbar navbar-light bg-light">
+          <div class="container-fluid">
+            <form class="d-flex">
+              <div class="input-group input-group-lg p-1">
+                <input type="text" class="form-control" placeholder="Introduce una cinta...">
+              </div>
+              <div class="btn-group p-1" role="group" aria-label="...">
+                <button style="width: 200px;" class="btn btn-outline-success" type="button" (click)="buscarCinta()">Buscar programas</button>
+              </div>
+            </form>
+          </div>
+        </nav>
+        <table *ngIf="juegos_cinta != null" class="table p-3">
+          <thead>
+            <tr>
+              <th scope="col">Nº</th>
+              <th scope="col">Juego</th>
+              <th scope="col">Tipo</th>
+              <th scope="col">Cinta</th>
+              <th scope="col">Fecha de registro</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let juego of juegos_cinta">
+              <th scope="col">{{juego.numero}}</th>
+              <th scope="col">{{juego.nombre}}</th>
+              <th scope="col">{{juego.tipo}}</th>
+              <th scope="col">{{juego.cinta}}</th>
+              <th scope="col">{{juego.registro}}</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
     </div>
+  </div>
 </div>
-
-
-
-
-

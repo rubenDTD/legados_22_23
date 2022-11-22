@@ -1,15 +1,12 @@
 package com.example.legados3.Controller;
 
+import com.example.legados3.Juego;
 import com.example.legados3.Service.WebService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
+import java.util.ArrayList;
 
-@Controller
-@CrossOrigin(origins = "http://localhost:4200")
+@RestController
 public class WebController {
 
     private final WebService webService;
@@ -20,22 +17,18 @@ public class WebController {
 
 
     @GetMapping(path = "/")
-    public String getHome(Model model) {
-        model.addAttribute("numGames", webService.totalGames());
-        return "index";
+    public String getHome() {
+        return webService.totalGames();
     }
 
-    @GetMapping(path = "/listTitle")
-    public String getListTitle(Model model, @RequestParam(name = "nombre") String nombre) {
-        model.addAttribute("numGames", webService.totalGames());
-        model.addAttribute("datosJuego", webService.listDatos(nombre));
-        return "index";
+    @GetMapping(path = "/getTitle/{title}")
+    public String getTitle(@PathVariable String title) {
+        return webService.listDatos(title);
     }
 
-    @GetMapping(path = "/list")
-    public String getList(Model model, @RequestParam(name = "cinta") String cinta) {
-        model.addAttribute("datosLista", webService.list(cinta));
-        return "list";
+    @GetMapping(path = "/list/{cinta}")
+    public ArrayList<Juego> getList(@PathVariable String cinta) {
+        return webService.list(cinta);
     }
 
 }

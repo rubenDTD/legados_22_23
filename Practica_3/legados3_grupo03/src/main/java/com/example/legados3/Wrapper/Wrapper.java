@@ -1,9 +1,12 @@
 package com.example.legados3.Wrapper;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 // Simula el un Wrapper de la aplicacion legada MS-DOS
 public class Wrapper {
@@ -36,8 +39,14 @@ public class Wrapper {
     // Captura la pantalla
     public BufferedImage capturaPantalla(){
         System.setProperty("java.awt.headless", "false");
-        BufferedImage i = robot.createScreenCapture(new Rectangle(635, 130, 650, 400));
+        BufferedImage i = robot.createScreenCapture(new Rectangle(1, 40, 853, 519));
         System.setProperty("java.awt.headless", "true");
+        File file = new File("pruebaOCR.png");
+        try {
+            ImageIO.write(i,"png",file);
+        } catch (IOException e) {
+            System.out.println("Could not save small screenshot " + e.getMessage());
+        }
         return i;
     }
 
@@ -49,7 +58,7 @@ public class Wrapper {
         } catch (Exception e){
             e.printStackTrace();
         }
-        robot.mouseMove(520, 700);
+        robot.mouseMove(540, 700);
         try {
             Thread.sleep(1000);
         } catch (Exception e){
