@@ -20,7 +20,7 @@
           <div class="container-fluid">
             <form class="d-flex">
               <div class="input-group input-group-lg p-1">
-                <input type="text" class="form-control" placeholder="Introduce nombre del juego...">
+                <input [(ngModel)]="juego" name="juego" type="text" class="form-control" placeholder="Introduce nombre del juego...">
               </div>
               <div class="btn-group p-1" role="group" aria-label="...">
                 <button style="width: 200px;" class="btn btn-outline-success" type="button" (click)="buscarJuego()">Buscar juego</button>
@@ -31,7 +31,6 @@
         <table *ngIf="datos_juego != null" class="table p-3">
           <thead>
             <tr>
-              <th scope="col">Nº</th>
               <th scope="col">Juego</th>
               <th scope="col">Tipo</th>
               <th scope="col">Cinta</th>
@@ -40,7 +39,6 @@
           </thead>
           <tbody>
             <tr>
-              <th scope="col">{{datos_juego.numero}}</th>
               <th scope="col">{{datos_juego.nombre}}</th>
               <th scope="col">{{datos_juego.tipo}}</th>
               <th scope="col">{{datos_juego.cinta}}</th>
@@ -57,7 +55,7 @@
           <div class="container-fluid">
             <form class="d-flex">
               <div class="input-group input-group-lg p-1">
-                <input type="text" class="form-control" placeholder="Introduce una cinta...">
+                <input [(ngModel)]="cinta" name="cinta" type="text" class="form-control" placeholder="Introduce una cinta...">
               </div>
               <div class="btn-group p-1" role="group" aria-label="...">
                 <button style="width: 200px;" class="btn btn-outline-success" type="button" (click)="buscarCinta()">Buscar programas</button>
@@ -77,7 +75,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let juego of juegos_cinta">
-              <th scope="col">{{juego.numero}}</th>
+              <th scope="col">{{juego.num}}</th>
               <th scope="col">{{juego.nombre}}</th>
               <th scope="col">{{juego.tipo}}</th>
               <th scope="col">{{juego.cinta}}</th>

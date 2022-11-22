@@ -58,7 +58,7 @@ public class Wrapper {
         } catch (Exception e){
             e.printStackTrace();
         }
-        robot.mouseMove(540, 700);
+        robot.mouseMove(555, 700);
         try {
             Thread.sleep(1000);
         } catch (Exception e){

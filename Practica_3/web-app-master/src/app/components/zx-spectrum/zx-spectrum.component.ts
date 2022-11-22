@@ -15,35 +15,27 @@ export class ZxSpectrumComponent implements OnInit {
 
   juegos_cinta: any = null
 
+  juego = ""
+  cinta = ""
+
   constructor() { }
 
   async ngOnInit(): Promise<void> {  
     // Se obtiene el numero de registros al iniciar la aplicacion
-    //let result = await axios.get("http://localhost:8080")
-    //console.log(result)
-    //this.total_juegos = result.data
+    let result = await axios.get("http://localhost:8080")
+    this.total_juegos = result.data
   }
 
-  buscarCinta() {
+  async buscarCinta() {
     // Busca todos los juegos en la cinta introducida por el usuario
-    this.juegos_cinta = [
-
-      {"numero": "234", "nombre": "FILECARD", "tipo": "UTILIDAD", "cinta": "6", "registro": "464"},
-      {"numero": "217", "nombre": "ESCAPE FROM SINGE'S CASTLE", "tipo": "ARCADE", "cinta": "3", "registro": "423"},
-      {"numero": "219", "nombre": "ESPIONAGE ISLAND", "tipo": "ARCADE", "cinta": "F", "registro": "77"},
-      {"numero": "231", "nombre": "FEUD", "tipo": "VIDEOAVENTURA", "cinta": "21", "registro": "643"},
-      {"numero": "233", "nombre": "FIGHTING WARRIOR", "tipo": "ARCADE", "cinta": "N", "registro": "194"}
-    ]
-
-    this.juegos_cinta = this.juegos_cinta.sort((a:any, b:any) => (Number(a.registro) <= Number(b.registro)) ? -1 : 1);
-
-
+    let result = await axios.get("http://localhost:8080/list/" + this.cinta)
+    this.juegos_cinta = result.data
+    this.juegos_cinta = this.juegos_cinta.sort((a:any, b:any) => 
+                                          (Number(a.registro) <= Number(b.registro)) ? -1 : 1);
   }
 
   async buscarJuego() {
-    //this.datos_juego = {"numero": "234", "nombre": "FILECARD", "tipo": "UTILIDAD", "cinta": "6", "registro": "464"}
-
-    let result = await axios.get("http://localhost:8080/getTitle/DEFENDER")
+    let result = await axios.get("http://localhost:8080/getTitle/" + this.juego)
     this.datos_juego = this.procesarCadena(result.data)
   }
 
@@ -57,7 +49,7 @@ export class ZxSpectrumComponent implements OnInit {
     let [tipo,posicion] = this.procesarTipo(cadena_split)
     // El nombre esta despues del registro y antes del tipo
     let nombre = cadena_split.slice(2,posicion).join(" ")
-    return {"numero": registro, "nombre": nombre, "tipo": tipo, "cinta": cinta, "registro": registro}
+    return {"nombre": nombre, "tipo": tipo, "cinta": cinta, "registro": registro}
   }
 
   // Proceso el tipo de juego en caso de tener mas de una palabra

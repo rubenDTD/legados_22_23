@@ -13,6 +13,7 @@ import java.io.File;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 @Service
 public class WebService {
@@ -88,72 +89,53 @@ public class WebService {
     public ArrayList<Juego> list(String cinta){
         ocr.cambiarLang(4);
         wrapper.moveNavigateBar(); // Movemos el raton y hacemos click para que se abra el programa
-        wrapper.pulsarTecla('6'); // Seleccionamos la opcion de listar los juegos
+        wrapper.pulsarTecla('3'); // Seleccionamos la opcion de ordenar datos
+        wrapper.pulsarTecla('3'); // Indicamos que queremos ordenar por cinta
+        wrapper.pulsarTecla('\n'); // Pulsamos ENTER
         try {
-            Thread.sleep(500);
+            Thread.sleep(35000); // Esperamos a que se ordenen los datos
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        BufferedImage img = wrapper.capturaPantalla();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        String result = ocr.leerImagen(img);
-        System.out.println(result);
-        if (result.contains("AMTIGUEDAD") || result.contains("ANTIGUEDAD") || result.contains("AH?IGUEDAD")){ // Ordenamos los juegos por el numero de cinta, si
-            wrapper.pulsarTecla('\n');  // no lo estan ya
-            wrapper.pulsarTecla('\n');
-            wrapper.pulsarTecla('3');
-            wrapper.pulsarTecla('3');
-            wrapper.pulsarTecla('\n');
-            try {
-                Thread.sleep(30000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            wrapper.pulsarTecla('\n');
-            wrapper.pulsarTecla('6');
-        }
-        for (int i=0; i<cinta.length(); i++){   //Escribimos numero de la cintas a buscar
+
+        wrapper.pulsarTecla('\n'); // Enter para volver a MENU
+        wrapper.pulsarTecla('6'); // Listar datos segun orden
+
+        for (int i=0; i<cinta.length(); i++){   //Escribimos cinta a buscar
             wrapper.pulsarTecla(cinta.charAt(i));
         }
         wrapper.pulsarTecla('\n'); // Esperamos a que carge la aplicacion legada
         try {
-            Thread.sleep(2000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        ArrayList<Juego> listJuegos = new ArrayList<>(); // Capturamos la primera pantalla
-        img = wrapper.capturaPantalla();
+
+        // Hacemos una primera captura de la lista de datos
+        ArrayList<Juego> listJuegos = new ArrayList<>();
+        BufferedImage img = wrapper.capturaPantalla();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        result = ocr.leerImagen(img);
+        String result = ocr.leerImagen(img);
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         img.flush();
-        while (true){     //Mientras que no se vuelva a la pantalla del menu
+
+        // Capturamos pantallas hasta que se acaben los datos y vuelva al menu
+        while (true) {
             String[] listWords = result.split("\n"); // Guardamos los resultados en un array de juegos
-            if(OCR.calculate(listWords[0],"M E N U") <= 3){
-                System.out.println("IF");
+            if(OCR.calculate(listWords[0],"M E N U") <= 3) {
+                System.out.println("VOLVER A MENU");
                 break;
             }
-            /*if(result.contains("B K ACABAR")){
-                break;
-            } else if (result.contains("BMACABAR")){
-                break;
-            } else if (result.contains("8 K ACABAR")) {
-                break;
-            }*/
+
             String[] param; String nombreJuego;
-            //String[] listWords = result.split("\n"); // Guardamos los resultados en un array de juegos
             for (String i: listWords){
                 System.out.println(i);
             }
@@ -166,7 +148,8 @@ public class WebService {
                     }
                     Juego nuevo = new Juego(param[0], nombreJuego, param[param.length - 3],
                             param[param.length - 2], param[param.length - 1]);
-                    listJuegos.add(nuevo);
+                    if(nuevo.getCinta().contains(cinta))
+                        listJuegos.add(nuevo);
                 }
             }
             wrapper.pulsarTecla(' '); //Pulsamos ' ' para pasar la pagina de la lista

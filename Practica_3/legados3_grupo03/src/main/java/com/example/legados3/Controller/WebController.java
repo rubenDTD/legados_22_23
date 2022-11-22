@@ -15,7 +15,6 @@ public class WebController {
         this.webService = webService;
     }
 
-
     @GetMapping(path = "/")
     public String getHome() {
         return webService.totalGames();
@@ -30,5 +29,4 @@ public class WebController {
     public ArrayList<Juego> getList(@PathVariable String cinta) {
         return webService.list(cinta);
     }
-
 }
