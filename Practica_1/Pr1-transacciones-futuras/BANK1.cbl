@@ -207,11 +207,10 @@
        LEER-TRANSF.
            *>CLOSE F-MOVIMIENTOS.
            READ TRANSFERENCIAS NEXT RECORD AT END GO TO P2.
-               DISPLAY TRANSF-DIA LINE 28 COL 20.
-               DISPLAY DIA-ORDEN LINE 28 COL 30.
-               DISPLAY TRANSF-MES LINE 28 COL 34.
-               DISPLAY ULTIMA-MENSUALIDAD LINE 29 COL 28.
-               *>GO TO EXIT-ENTER.
+               *>DISPLAY TRANSF-DIA LINE 28 COL 20.
+               *>DISPLAY DIA-ORDEN LINE 28 COL 30.
+               *>DISPLAY TRANSF-MES LINE 28 COL 34.
+               *>DISPLAY ULTIMA-MENSUALIDAD LINE 29 COL 28.
                IF (TRANSF-MES <> 00) THEN
                   IF ((ANO > TRANSF-ANO OR
                       (ANO = TRANSF-ANO AND MES > TRANSF-MES) OR
@@ -230,10 +229,7 @@
                            MOVE 2 TO TIPO-TRANSF
                            GO TO PCONSULTA-SALDO
                END-IF.
-               GO TO EXIT-ENTER.
-
                GO TO LEER-TRANSF.
-               *>GO TO P2.
 
 
 
@@ -511,7 +507,7 @@
                 REWRITE TRANSF-REG
                 GO TO LEER-TRANSF
            ELSE
-               GO TO LEER-TRANSF
+               GO TO BUCLE
            END-IF.
 
 
